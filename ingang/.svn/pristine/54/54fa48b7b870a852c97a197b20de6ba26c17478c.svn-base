@@ -1,0 +1,34 @@
+package com.ingang.mentoring.mapper;
+
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+
+import com.ingang.mentoring.vo.MentoringVO;
+import com.webjjang.util.PageObject;
+
+public interface MentoringMapper {
+
+	public List<MentoringVO> list(PageObject pageObject);
+
+	public long getTotalRow(PageObject pageObject);
+
+	public List<MentoringVO> flist(@Param("checkedValues") String[] checkedValues, @Param("pageObject") PageObject pageObject);
+
+	public MentoringVO view(long mno);
+	
+	public int write(MentoringVO vo);
+	
+	public int update(MentoringVO vo);
+
+	public int deadline(long mno);
+
+	public Object viewStartDate(long mno);
+
+	public Object viewEndDate(long mno);
+
+	public MentoringVO getvo(long mno);
+
+	public int timer();
+
+}

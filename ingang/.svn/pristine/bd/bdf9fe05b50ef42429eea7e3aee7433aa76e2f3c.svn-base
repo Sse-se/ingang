@@ -1,0 +1,69 @@
+package com.ingang.enroll.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
+
+import com.ingang.enroll.mapper.EnrollMapper;
+import com.ingang.enroll.vo.EnrollVO;
+
+@Service
+@Qualifier("enrollServiceImpl")
+public class EnrollServiceImpl implements EnrollService {
+
+	@Autowired
+	private EnrollMapper mapper;
+	
+	@Override
+	public List<EnrollVO> orderList(EnrollVO vo) {
+		// TODO Auto-generated method stub
+		return mapper.orderList(vo);
+	}
+
+	@Override
+	public List<EnrollVO> orderView(EnrollVO vo) {
+		// TODO Auto-generated method stub
+		return mapper.orderView(vo);
+	}
+
+	@Override
+	public List<EnrollVO> enrollList(String id) {
+		// TODO Auto-generated method stub
+		return mapper.enrollList(id);
+	}
+
+	@Override
+	public int enroll(EnrollVO vo) {
+		// TODO Auto-generated method stub
+		
+		// enroll insert
+		mapper.enroll(vo);
+		// detail insert --> 여러개면 for문으로
+		mapper.enrollDetail(vo);
+		
+		return 1;
+	}
+
+	@Override
+	public int deleteEnroll(EnrollVO vo) {
+		// TODO Auto-generated method stub
+		
+		long[] pnoList = vo.getPnoList();
+		
+//		// delete deleteAll -- 전체 취소
+//		mapper.deleteDetailAll(vo);
+		
+		for(long pno : pnoList) {
+			// delete delete -- 부분 취소
+			vo.setPno(pno);
+			mapper.deleteDetail(vo);
+		}
+		// delete enroll
+		mapper.deleteEnroll(vo);
+		
+		return 1;
+	}
+
+}

@@ -1,0 +1,79 @@
+package com.ingang.cart.controller;
+
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+
+import com.ingang.cart.service.CartService;
+import com.ingang.cart.vo.CartVO;
+import com.webjjang.util.PageObject;
+import lombok.extern.log4j.Log4j;
+
+@Controller
+@RequestMapping("/cart")
+@Log4j
+public class CartController {
+	
+	String modul = "cart";
+	
+	@Autowired
+	@Qualifier("cartServiceImpl")
+	private CartService service;
+	String id="test";
+	@GetMapping("/list.do")
+	public String list(PageObject pageObject,Model model){
+		log.info("댓글 리스트");
+		log.info("pageObject = " + pageObject + ", id= " + id);
+		// session에서 로그인한 사용자의 ID 가져오기
+//		String id = (String) session.getAttribute("id");
+		
+		log.info("게시판 리스트 ................................");
+		model.addAttribute("list", service.list(id, pageObject));
+	
+		return modul + "/list";
+		
+		
+		
+		
+	}
+	
+	 
+	
+
+	@PostMapping("/update.do")
+	@ResponseBody
+	public String update(@RequestParam("quantity") long quantity, long cartNo) {
+	    
+	    return "success";
+	}
+		
+
+
+
+}
+
+
+
+
+
+
+	
+	
+
+

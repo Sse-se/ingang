@@ -1,0 +1,44 @@
+package com.ingang.coReview.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
+
+import com.ingang.coReview.mapper.CoReviewMapper;
+import com.ingang.coReview.vo.CoReviewVO;
+
+@Service
+@Qualifier("coReivewServiceImpl")
+public class CoReviewServiceImpl implements CoReviewService{
+
+
+	@Autowired
+	private CoReviewMapper mapper;
+	
+	@Override
+	public List<CoReviewVO> list(long no) {
+		// TODO Auto-generated method stub
+		return mapper.reviewList(no);
+	}
+
+	@Override
+	public int write(CoReviewVO vo) {
+		// TODO Auto-generated method stub
+		return mapper.write(vo);
+	}
+
+	@Override
+	public int update(CoReviewVO vo) {
+		// TODO Auto-generated method stub
+		return mapper.update(vo);
+	}
+
+	@Override
+	public int delete(CoReviewVO vo) {
+		// TODO Auto-generated method stub
+		return mapper.delete(vo);
+	}
+	
+}

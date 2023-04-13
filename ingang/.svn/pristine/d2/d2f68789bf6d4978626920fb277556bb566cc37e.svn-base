@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ingang.enrollList.mapper.EnrollListMapper">
+
+<select id="list" resultType="com.ingang.enroll.vo.EnrollVO">
+		select pno, image, payDate, viewDate, viewRatio, title, teacher_name, no
+		from(
+			select rownum rnum, pno, image, payDate, viewDate, viewRatio, title, teacher_name, no
+			from(
+				select pno, image, payDate, viewDate, viewRatio, title, teacher_name, no
+				from enrollList
+				where id=#{id} and status='결제완료'
+				<include refid="search"></include>
+				<include refid="search2"></include>
+			)
+		)
+		where rnum between #{pageObject.startRow} and #{pageObject.endRow}
+</select>
+
+	<!-- 수강목록 getTotalRow -->
+	<select id="getTotalRowEnroll" resultType="Long">
+		select count(*)
+		from enrollList
+		where id=#{id} and status='결제완료'
+		<include refid="search"></include>
+	</select>
+	
+	<sql id="search">
+		<if test="pageObject.key != null and pageObject.key !=''.toString()">
+			<if test="pageObject.key.indexOf('complete'.toString()) >= 0">
+				and VIEWSTATUS = '학습완료'
+			</if>
+			<if test="pageObject.key.indexOf('studying'.toString()) >= 0">
+				and VIEWSTATUS = '학습중'
+			</if>
+		</if>
+	</sql>
+	
+	<!-- 검색 -->
+	<sql id="search2">
+		<if test="pageObject.word !=null and pageObject.word !=''.toString()">
+			<if test="pageObject.word.indexOf('study'.toString()) >= 0">
+				order by viewdate desc
+			</if>
+			<if test="pageObject.word.indexOf('buy'.toString()) >= 0">
+				order by paydate desc
+			</if>
+			<if test="pageObject.word.indexOf('title'.toString()) >= 0">
+				order by title asc
+			</if>
+		</if>
+		<if test="pageObject.word == null or pageObject.word ==''.toString()">
+			order by title asc
+		</if>
+	</sql>
+	
+
+
+</mapper>

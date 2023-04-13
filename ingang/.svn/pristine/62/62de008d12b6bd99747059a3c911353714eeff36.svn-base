@@ -1,0 +1,23 @@
+package com.ingang.order.vo;
+
+import java.util.Date;
+
+
+import lombok.Data;
+
+	@Data
+	public class OrderVO {
+
+		// 주문번호,상세번호,주문할수량,책재고,책가격,총가격
+		private long ordNo, detailNo, odquantity, bquantity, price, totalPrice, quantity;
+		// 아이디, 받는사람의 배송지, 이름, 전화번호, 배달상태, 결제수단
+		private String id, dlvAdress,address, oname, name, tel, dlvCondition, payMethod;
+		// 주문일, 도착일
+		private Date orderDate,arriveDate;
+		// 교재 번호
+		private long bookNo;
+		// 교재이미지, 교재이름, 교재영역
+		private String fileName, bookName, bookDiv;
+		
+	}
+	

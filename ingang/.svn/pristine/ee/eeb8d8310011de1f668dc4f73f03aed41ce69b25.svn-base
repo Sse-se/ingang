@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ingang.coReview.mapper.CoReviewMapper">
+
+	<select id="reviewList" resultType="com.ingang.coReview.vo.CoReviewVO">
+	    select rno, id, name, content, writeDate, score, likecnt
+	    from c_reviewList
+	    where no = #{no}
+	</select>
+	
+	<insert id="write">
+		insert into review(rno, pno, id, content, score)
+		values(review_seq.nextval, #{pno}, #{id}, #{content}, #{score})
+	</insert>
+	
+	<update id="update">
+		update review
+		set content = #{content}, score=#{score}
+		where pno=#{pno} and id=#{id}
+	</update>
+	
+	<delete id="delete">
+		delete from review
+		where pno=#{pno} and id=#{id}
+	</delete>
+
+
+</mapper>

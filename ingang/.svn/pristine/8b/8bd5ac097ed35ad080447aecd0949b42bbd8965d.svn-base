@@ -1,0 +1,37 @@
+package com.ingang.mentoring.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.ingang.mentoring.service.MentoringService;
+import com.webjjang.util.PageObject;
+
+@Controller
+@RequestMapping("/mentoring")
+public class MentoringController {
+	
+	@Autowired
+	@Qualifier("mentoringServiceImpl")
+	private MentoringService service;
+	
+	@RequestMapping("/list.do")
+	public String list(@ModelAttribute("pageObject") PageObject pageObject, Model model) {
+		
+		model.addAttribute("list", service.list(pageObject));
+		
+		return "mentoring/list";
+	}
+	
+	
+	@RequestMapping("/view.do")
+	// 전달되는 변수로 받을 때는 한 개씩 따로 따로 받는다.
+	public String view(long mno, Model model) {
+		model.addAttribute("vo", service.view(mno));
+		return "mentoring/view";
+	}
+
+}

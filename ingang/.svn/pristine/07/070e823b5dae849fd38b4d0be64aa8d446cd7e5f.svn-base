@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ingang.courseView.mapper.CourseViewMapper">
+
+	<update id="update">
+		UPDATE edetail_view
+		SET viewdate = SYSDATE, viewratio = round(((viewtime+#{viewTime}) / vidlength) , 1), viewtime = viewtime+ #{viewTime}
+		WHERE pno = #{pno}
+	</update>
+
+</mapper>

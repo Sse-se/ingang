@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ingang.notice.mapper.NoticeMapper">
+<!-- 리스트 -->
+	
+<!-- 전체 -->
+<select id="list" resultType="com.ingang.notice.vo.NoticeVO">
+	select no, title,startDate,endDate,updateDate,hit
+		from(
+			select rownum rnum,  no, title,startDate,endDate,updateDate,hit
+			from(
+				select  no, title,startDate,endDate,updateDate,hit
+			from notice
+			<include refid="search"></include>
+			order by updateDate desc
+		)
+	)
+</select>
+<!-- 현재 -->
+<select id="currentList" resultType="com.ingang.notice.vo.NoticeVO">
+    select no, title, startDate, endDate, updateDate, hit
+    from (
+        select rownum rnum, no, title, startDate, endDate, updateDate, hit
+        from (
+            select no, title, startDate, endDate, updateDate, hit
+            from notice 
+            where startDate &lt;= sysdate and trunc(sysdate) &lt;= endDate
+            <include refid="search1"></include>
+            order by updateDate desc
+        )
+    )
+</select>
+<!-- 페이징 -->
+<select id="getTotalRow" resultType="Long">
+		select count(*) from notice
+</select>
+<sql id="search">
+		<if test="word !=null and word !=''.toString()">
+			where 1 = 0
+			<if test="key.indexOf('t'.toString()) >= 0">
+				or title like '%' || #{word} || '%'
+			</if>
+			<if test="key.indexOf('c'.toString()) >= 0">
+				or content like '%' || #{word} || '%'
+			</if>
+		</if>
+	</sql>
+<sql id="search1">
+    <if test="word !=null and word !=''.toString()">
+    
+        <if test="key.indexOf('t'.toString()) >= 0">
+            and (title like '%' || #{word} || '%')
+        </if>
+        <if test="key.indexOf('c'.toString()) >= 0">
+            and (content like '%' || #{word} || '%')
+        </if>
+    </if>
+</sql>
+
+<!-- 예약 -->
+<select id="reservedList" resultType="com.ingang.notice.vo.NoticeVO">
+	select no, title,startDate,endDate,updateDate,hit
+		from(
+			select rownum rnum,  no, title,startDate,endDate,updateDate,hit
+			from(
+				select  no, title,startDate,endDate,updateDate,hit
+			from notice
+			where startDate &gt; sysDate
+			order by updateDate desc
+		)
+	)
+</select>
+
+<!-- 지난 -->
+<select id="lastList" resultType="com.ingang.notice.vo.NoticeVO">
+	select no, title, startDate, endDate, updateDate, hit
+		from(
+			select rownum rnum, no, title, startDate, endDate, updateDate, hit
+			from(
+				select no, title, startDate, endDate, updateDate, hit
+				from notice
+				where endDate + 1 &lt; sysDate 
+				order by updateDate desc
+			)
+		)
+</select>
+<!-- 보기 -->
+<select id="view" resultType="com.ingang.notice.vo.NoticeVO">
+	select no, title, content, startDate, endDate, writeDate, updateDate, hit
+	from notice
+	where no = #{no}
+</select>
+<update id="increase">
+	update notice set hit = hit +1
+	where no = #{no}
+</update>
+<!-- 등록 -->
+	<insert id="write">
+		insert into notice(no , title, content, startDate, endDate)
+		values(book_seq.nextval,#{title},#{content},#{startDate},#{endDate})
+	</insert>
+<!-- 수정 -->
+<update id="update">
+	update notice set title = #{title}, content = #{content}, startDate = #{startDate}, endDate = #{endDate}
+	where no = #{no}
+</update>
+<!-- 삭제 -->
+<delete id="delete">
+	delete from notice 
+	where no = #{no}
+</delete>
+</mapper>

@@ -1,0 +1,70 @@
+package com.ingang.reservation.controller;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import com.ingang.member.vo.MemberVO;
+import com.ingang.mentoring.vo.MentoringVO;
+import com.ingang.messageroom.service.MessageRoomService;
+import com.ingang.messageroom.vo.MessageRoomVO;
+import com.ingang.reservation.service.ReservationService;
+import com.ingang.reservation.vo.ReservationVO;
+
+@Controller
+@RequestMapping("/reservation")
+public class ReservationController {
+	
+	
+	
+	@Autowired
+	@Qualifier("reservationServiceImpl")
+	private ReservationService reservationservice;
+	@Autowired
+	@Qualifier("messageRoomServiceImpl")
+	private MessageRoomService messageroomservice;
+	
+	@GetMapping("/write.do")
+	public String writeForm() {
+		return "reservation/write";
+	}
+	
+	@PostMapping("/write.do")
+	public String write(ReservationVO rvo, MessageRoomVO mvo, HttpServletRequest request, RedirectAttributes rttp) throws ParseException {
+		
+		reservationservice.write(rvo);
+		MemberVO memberVO = (MemberVO) request.getSession().getAttribute("login");
+		
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		Date resDate = sdf.parse(request.getParameter("resDate"));
+		long mno = 
+		Long.parseLong(request.getParameter("mno"));
+		long rno =
+		reservationservice.findrno(memberVO.getId(),mno);
+		long resTime =
+		Long.parseLong(request.getParameter("resTime"));
+		mvo.setRno(rno);
+		mvo.setMno(mno);
+		mvo.setResDate(resDate);
+		mvo.setLmcontent(request.getParameter("greetings"));
+		mvo.setMemberimg(memberVO.getMemberimg());
+		mvo.setPar1(request.getParameter("aid"));
+		mvo.setPar2(request.getParameter("mid"));
+		mvo.setResDate(resDate);
+		mvo.setResTime(resTime);
+		messageroomservice.write(mvo);
+		
+		return "redirect:/mentoring/list.do";
+	}
+
+}

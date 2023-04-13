@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ingang.book.mapper.BookMapper">
+
+	<!-- 리스트 -->
+	<select id="list" resultType="com.ingang.book.vo.BookVO">
+		select bookNo,bookName, fileName, price, bookDiv, pubDate, status
+			from(
+			    select rownum rnum, bookNo,bookName, fileName, price, bookDiv, pubDate, status
+			    from(
+			        select bookNo,bookName, fileName, price, bookDiv, pubDate, status
+			    from book
+			    <include refid="search"></include>
+			    order by status asc
+		    )
+		)
+		where rnum between #{startRow} and #{endRow}
+	</select>
+	
+	<select id="getTotalRow" resultType="Long">
+		select count(*) from book
+			<include refid="div"></include>
+	</select>
+	<sql id="div">
+		<if test="word != null and word != ''.toString()">
+			where 1 = 0
+			<if test="word.indexOf('JAVA'.toString()) >= 0">
+			and bookDiv = 'JAVA'
+			</if>
+			<if test="word.indexOf('Jsp/Servlet'.toString()) >= 0">
+			and bookDiv = 'Jsp/Servlet'
+			</if>
+			<if test="word.indexOf('Spring'.toString()) >= 0">
+			and bookDiv = 'Spring'
+			</if>
+		</if>
+	</sql>
+	<sql id="search">
+		<if test="word !=null and word !=''.toString()">
+			where 1 = 0
+			<if test="key.indexOf('t'.toString()) >= 0">
+				or bookName like '%' || #{word} || '%'
+			</if>
+			<if test="key.indexOf('d'.toString()) >= 0">
+				or bookDiv like '%' || #{word} || '%'
+			</if>
+		</if>
+	</sql>
+	
+	<select id="view" resultType="com.ingang.book.vo.BookVO">
+		select bookNo, fileName,bookName, bookIntroduce, bookDiv, publisher, quantity, status, pubDate,price
+		from book
+		where bookno = #{bookNo}
+	</select>
+	
+	<select id="clist" resultType="com.ingang.book.vo.BookVO">  
+		select c.no, c.cbno, c.title, c.teacher, c.cbno, c.startDate, c.endDate,c.image,b.bookNo
+		from book b, course c
+		where (b.bookNo = c.cbNo)
+	</select>
+	
+	<insert id="write">
+		insert into book(bookNo,fileName,bookName,bookIntroduce,bookDiv,publisher,quantity,status,pubDate,price)
+		values(book_seq.nextval,#{fileName},#{bookName},#{bookIntroduce},#{bookDiv},#{publisher},#{quantity},#{status},#{pubDate1},#{price})
+	</insert>
+	
+	<update id="update">
+		update book set bookName = #{bookName}, bookIntroduce = #{bookIntroduce}, bookDiv = #{bookDiv}, publisher = #{publisher},
+ 			quantity = #{quantity}, pubDate = #{pubDate1}, price = #{price}
+ 		where bookNo = #{bookNo}	 
+	</update>
+	
+	<update id="updateImage">
+		update book set fileName = #{fileName}
+		where bookNo = #{bookNo} 
+	</update>
+	
+	<delete id="delete">
+		update book set quantity = '0'
+		where bookNo = #{bookNo}
+	</delete>
+	
+	<!-- 메인 랜덤 리스트 -->
+	<select id="mainList" resultType="com.ingang.book.vo.BookVO">
+		select bookNo, fileName, bookName, bookDiv, publisher, price
+		from(
+		    select bookNo, fileName, bookName, bookDiv, publisher, price
+		    from book
+		    order by DBMS_RANDOM.VALUE
+		)
+		where rownum between 1 and 6
+	</select>
+	
+	
+	
+</mapper>

@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ingang.enroll.mapper.EnrollMapper">
+
+	<!-- 강의 구매내역 -->
+	<select id="orderList" resultType="com.ingang.enroll.vo.EnrollVO">
+		select eno, payDate, totalprice, listtitle, status
+		from(
+			select rownum rnum, eno, payDate, totalprice, listtitle, status
+			from(
+				select row_number() over (partition by eno order by eno desc) dnum , eno, payDate, totalprice, listtitle, status
+				from enrollOrderList
+				where id=#{id}
+				order by eno desc
+			) where dnum = 1
+		) where rnum between #{pageObject.startRow} and #{pageObject.endRow}
+	</select>
+	
+	<!-- getTotalRow -->
+	<select id="getTotalRow" resultType="Long">
+		SELECT COUNT(DISTINCT eno) FROM enrollOrderList WHERE id = #{id}
+	</select>
+	
+	<!-- 모든 회원 강의 구매내역 -->
+	<select id="orderListAll" resultType="com.ingang.enroll.vo.EnrollVO">
+		select eno, payDate, totalprice, listtitle, status, id, name
+		from(
+			select rownum rnum, eno, payDate, totalprice, listtitle, status, id, name
+			from(
+				select row_number() over (partition by eno order by eno desc) dnum , eno, payDate, totalprice, listtitle, status, id, name
+				from enrollOrderList
+							<include refid="search" />
+				order by eno desc
+			) where dnum = 1
+		) where rnum between #{startRow} and #{endRow}
+	</select>
+	
+	<!-- 모든 회원 getTotalRow -->
+	<select id="getTotalRowAll" resultType="Long">
+		SELECT COUNT(DISTINCT eno) FROM enrollOrderList
+			<include refid="search"></include>
+	</select>
+	
+	<!-- 검색 -->
+	<sql id="search">
+		<if test="word !=null and word !=''.toString()">
+			where 1 = 0
+			<if test="key.indexOf('n'.toString()) >= 0">
+				or name like '%' || #{word} || '%'
+			</if>
+			<if test="key.indexOf('i'.toString()) >= 0">
+				or id like '%' || #{word} || '%'
+			</if>
+			<if test="key.indexOf('t'.toString()) >= 0">
+				or title like '%' || #{word} || '%'
+			</if>
+		</if>
+	</sql>
+	
+	
+	
+	<!-- 강의 구매 상세내역 -->
+	<select id="orderView" resultType="com.ingang.enroll.vo.EnrollVO">
+		select image, title, teacher, payDate, price, payStatus, payMethod, totalprice, eno, pno
+		from enrollview
+		where eno=#{eno}
+	</select>
+	
+	
+	<!-- 강의 구매 상세내역 -->
+	<select id="viewDetail" resultType="com.ingang.enroll.vo.EnrollVO">
+		select image, title, teacher, payDate, price, payStatus, payMethod, totalprice, eno, pno
+		from enrollview
+		where eno= (select max(eno) from enroll where id = #{id})
+	</select>
+	
+	
+	<!-- 수강 목록 -->
+	<select id="enrollList" resultType="com.ingang.enroll.vo.EnrollVO">
+		select pno, image, payDate, viewDate, viewRatio, title, teacher_name, no
+		from(
+			select rownum rnum, pno, image, payDate, viewDate, viewRatio, title, teacher_name, no
+			from(
+				select pno, image, payDate, viewDate, viewRatio, title, teacher_name, no
+				from enrollList
+				where id=#{id} and status='결제완료'
+				<include refid="search2"></include>
+			)
+		)
+		where rnum between #{pageObject.startRow} and #{pageObject.endRow}
+	</select>
+	
+	<!-- 수강목록 getTotalRow -->
+	<select id="getTotalRowEnroll" resultType="Long">
+		select count(*)
+		from enrollList
+		where id=#{id} and status='결제완료'
+	</select>
+	
+	<!-- 검색 -->
+	<sql id="search2">
+		<if test="pageObject.word !=null and pageObject.word !=''.toString()">
+			<if test="pageObject.word.indexOf('study'.toString()) >= 0">
+				order by viewdate desc
+			</if>
+			<if test="pageObject.word.indexOf('buy'.toString()) >= 0">
+				order by paydate desc
+			</if>
+			<if test="pageObject.word.indexOf('title'.toString()) >= 0">
+				order by title asc
+			</if>
+		</if>
+		<if test="pageObject.word == null or pageObject.word ==''.toString()">
+			order by title asc
+		</if>
+	</sql>
+	
+	
+	
+	<!-- 강의 결제하기 -->
+	<!-- enroll insert -->
+	<insert id="enroll">
+		insert into enroll(eno, id, totalprice, payMethod, title)
+		values(enroll_seq.nextval, #{id}, #{totalprice}, #{payMethod}, #{title})
+	</insert>
+	<!-- detail insert -->
+	<insert id="enrollDetail">
+		insert into eDetail(pno, eno, no)
+		values(eDetail_seq.nextval, (select max(eno) from enroll where id=#{id}), #{no})
+	</insert>
+	
+	<!-- 수강 취소 -->
+	<!-- detail delete -->
+	<update id="deleteDetailAll">
+		update eDetail
+		set payStatus = '취소'
+		where eno = #{eno}
+	</update>
+	
+	<update id="deleteDetail">
+		update eDetail
+		set payStatus = '취소'
+		where eno = #{eno} and pno = #{pno}
+	</update>
+	
+	<!-- enroll delete -->
+	<update id="deleteEnroll">
+		update enroll
+		set Status = '취소'
+		where eno = #{eno}
+	</update>
+
+</mapper>

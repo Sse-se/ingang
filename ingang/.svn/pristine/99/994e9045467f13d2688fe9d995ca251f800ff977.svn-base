@@ -1,0 +1,16 @@
+package com.ingang.course.mapper;
+
+import java.util.List;
+
+import com.ingang.course.vo.CourseVO;
+
+public interface CourseMapper {
+	
+	// 리스트
+	public List<CourseVO> list();
+	// 보기
+	// 등록
+	// 수정
+	// 삭제
+
+} // end of CourseMapper interface

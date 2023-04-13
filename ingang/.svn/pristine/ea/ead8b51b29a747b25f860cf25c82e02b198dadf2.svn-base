@@ -1,0 +1,121 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>강의 결제 상세내역</title>
+
+<script type="text/javascript">
+
+$(function(){
+	$("#cancelDivBtn").click(function(){
+		$("#cancelDiv").slideToggle();
+		showCancelDiv();
+	});
+
+	  // 모두 선택 체크박스의 변경 이벤트를 감지하여 모든 체크박스 선택 또는 해제
+	  $("#selectAll").change(function(){
+	    const checkboxes = $("input[name='pnoListCheck']");
+	    checkboxes.prop('checked', this.checked);
+	  });
+
+	  // 강의 상세내역의 체크박스 변경 이벤트를 감지하여 모두 선택 체크박스 상태 변경
+	  $("input[name='pnoListCheck']").change(function() {
+	    const checkboxes = $("input[name='pnoListCheck']");
+	    const allChecked = checkboxes.length === checkboxes.filter(":checked").length;
+	    $("#selectAll").prop("checked", allChecked);
+	  });
+	  
+});
+</script>
+
+</head>
+<body>
+	<section class="layout_padding">
+		<div class="container">
+			<h1>강의 결제 상세내역</h1>
+			
+				<input type="checkbox" id="selectAll" onclick="toggleCheckbox(this, 'pnoListCheck')"> 모두 선택	
+				<table class="table">
+				<c:forEach items="${view }" var="vo" varStatus="status">
+					<tbody>
+						<tr>
+							<td class="dataRow"><input name="pnoListCheck" type="checkbox" value=${vo.pno }></td>
+							<td class="pno">수강 상세번호 : ${vo.pno }</td>
+							<td>이미지 : ${vo.image }</td>
+							<td>강의명 : ${vo.title }</td>
+							<td>강사명 : ${vo.teacher }</td>
+							<td>강의가격 : ${vo.price }</td>
+							<td>결제상태 : ${vo.payStatus }</td>
+						</tr>
+					</tbody>
+   					<c:if test="${status.index == fn:length(view) - 1}">
+					<tbody>
+						<tr>
+							<td colspan="7">결제일 : <fmt:formatDate value="${vo.payDate }" pattern="yyyy-MM-dd"/></td>
+						</tr>
+						<tr>
+							<td colspan="7">결제수단 : ${vo.payMethod }</td>
+						</tr>
+						<tr>
+							<td colspan="7">총 결제금액 : ${vo.totalprice }</td>
+						</tr>
+					</tbody>
+					</c:if>
+				</c:forEach>
+				</table>
+			
+			<button type="button" onclick="history.back()">목록으로</button>
+			<button type="button" id="cancelDivBtn">결제 취소</button>
+			
+			<div id="cancelDiv" style="display: none;">
+				<form action="/enroll/delete.do" method="post" id="cancelForm">
+					<c:forEach items="${view }" var="vo" varStatus="status">
+						<c:if test="${status.index == 0 }">
+							<input type="hidden" name="eno" value="${vo.eno }">
+						</c:if>
+					</c:forEach>
+					<input type="hidden" name="pnoList">
+					
+					<button id="cancelBtn">결제 취소</button>
+				</form>
+			</div>
+			
+		</div>
+	</section>
+	
+	<script>
+  // 선택된 체크박스의 pno 값을 숨겨진 input 태그에 할당하여 폼 전송
+  function showCancelDiv() {
+    const checkBoxes = document.getElementsByName("pnoListCheck");
+    const selectedPnoList = [];
+
+    for (let i = 0; i < checkBoxes.length; i++) {
+      if (checkBoxes[i].checked) {
+        selectedPnoList.push(checkBoxes[i].value);
+      }
+    }
+
+    // pno 리스트를 폼 안에 있는 hidden input 태그에 할당
+    const pnoListInput = document.querySelector("#cancelForm input[name='pnoList']");
+    pnoListInput.value = selectedPnoList.join();
+
+  }
+
+
+  function toggleCheckbox(checkbox, name) {
+	    const checkboxes = document.getElementsByName(name);
+	    for (let i = 0; i < checkboxes.length; i++) {
+	        checkboxes[i].checked = checkbox.checked;
+	    }
+	}
+  
+  
+</script>
+	
+</body>
+</html>

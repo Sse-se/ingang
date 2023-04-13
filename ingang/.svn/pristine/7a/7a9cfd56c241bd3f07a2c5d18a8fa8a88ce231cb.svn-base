@@ -1,0 +1,23 @@
+package com.ingang.enroll.vo;
+
+import java.util.Date;
+
+import lombok.Data;
+
+@Data
+public class EnrollVO {
+	
+	// eno:수강신청번호, pno:수강상세번호, no:강의등록번호
+	private long eno, pno, no;
+	// id:주문자아이디, payStatus:결제상태(결제완료,취소), payMethod:결제수단(카드결제...)
+	private String id, payStatus, payMethod;
+	// price:강의가격, totalprice:총 결제금액
+	private long price, totalprice;
+	// title:강의명, image:강의이미지, teacher:강사
+	private String title, image, teacher;
+	// eDate:수강결제일, viewDate:최종수강일
+	private Date eDate, viewDate;
+	// viewRatio:학습진행률
+	private long viewRatio;
+	
+}

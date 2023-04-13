@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="com.ingang.cartOrder.mapper.CartOrderMapper">
+  
+<select id="getCartList" resultType="com.ingang.cart.vo.CartVO">
+   select rnum, cartNo, no, bookNo, title, bookName, quantity, id, Price, pino, image
+    from(
+        select rownum rnum, cartNo, no, bookNo, bookName, title, quantity, id, price, pino , image
+            from(
+                SELECT cartNo, c.no no,null as bookno, null as bookname, cs.title title, c.quantity, c.id, cs.price, c.pino, cs.image
+                FROM cart c, course cs
+                WHERE (c.id='test') AND (cs.no = c.no)
+                
+                UNION ALL
+                
+                SELECT cartNo, null as no, c.bookNo bookNo, b.bookName bookname, null as title, c.quantity, c.id, b.price, c.pino, b.fileName
+                FROM cart c, book b
+                WHERE (c.id='test') AND (b.bookNo = c.bookNo)order by cartNo desc
+            ) 
+        ) where cartNo in 
+        <foreach collection="cartNoList" item="item" open="(" close=")" separator=",">
+        #{item}
+         </foreach>
+        
+
+</select>
+
+<insert id="cartOrder">
+<if test="vo.bookNo != 0">
+insert into ordertable (ordNo, id, dlvAdress, name, tel, totalPrice)
+values (ordertable_seq.nextval, #{id}, ${dlvAdress}, #{name}, #{tel}, #{totalPrice}) 
+</if>
+<if test="vo.bookNo == 0">
+insert into enroll(eno, id, totalprice, payMethod)
+values(enroll_seq.nextval, #{id}, #{totalprice}, #{payMethod})
+</if>
+</insert>
+<insert id="cartOrderDetail">
+<if test="vo.bookNo != 0">
+insert into order_detail (detailNo, ordNo, quantity, bookNo)
+values (order_detail_seq.nextval, select max(ordNo) from ordertable where id=#{id}, ${quantity}, #{bookNo}) ) 
+</if>
+<if test="vo.bookNo == 0">
+insert into eDetail(pno, eno, no)
+values(eDetail_seq.nextval, select max(eno) from enroll where id=#{id}, #{no})
+</if>
+</insert>
+	
+
+  </mapper>

@@ -1,0 +1,20 @@
+package com.ingang.coReview.vo;
+
+import java.util.Date;
+
+import lombok.Data;
+
+@Data
+public class CoReviewVO {
+
+	// rno:리뷰번호
+	private long rno;
+	// id:작성자아이디, name:작성자이름, content:리뷰내용
+	private String id, name, content;
+	// writeDate:리뷰 작성일
+	private Date writeDate;
+	// score:리뷰별점, likecnt:좋아요개수
+	private long score, likecnt;
+
+	
+}

@@ -1,0 +1,31 @@
+package com.ingang.messageroom.mapper;
+
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+
+import com.ingang.mentoring.vo.MentoringVO;
+import com.ingang.messageroom.vo.MessageRoomVO;
+import com.ingang.reservation.vo.ReservationVO;
+import com.webjjang.util.PageObject;
+
+public interface MessageRoomMapper {
+
+	
+	public int write(MessageRoomVO vo);
+
+	public List<MessageRoomVO> list(String id);
+	
+	public long findroomno(String par, String id);
+
+
+	public int updatep(long roomno);
+
+	public int updater(long roomno);
+
+	public int updatet(long roomno);
+
+	public int updatea(long roomno);
+
+	public MessageRoomVO getvo(long roomno);
+}

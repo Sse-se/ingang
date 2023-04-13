@@ -1,0 +1,26 @@
+package com.ingang.book.vo;
+
+import java.util.Date;
+
+import lombok.Data;
+
+@Data
+public class BookVO {
+	
+	// bookNo : 교재번호
+	private long bookNo;
+	// fileName : 교재사진,책이름, bookIntroduce : 책소개 
+	// bookDiv : JAVA/JSP&Servlet,Spring
+	private String fileName, bookName, bookIntroduce, bookDiv;
+	// 출판사
+	private String publisher;
+	// 재고 
+	private long quantity;
+	// 상태 판매중 / 품절 0 일시 자동 품절상태변경되도록
+	private String status;
+	// 발행일
+	private Date pubDate;
+	private String pubDate1;
+	// 가격
+	private long price;
+}

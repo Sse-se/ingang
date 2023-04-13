@@ -1,0 +1,36 @@
+package com.ingang.cartOrder.service;
+
+
+import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
+import com.ingang.cart.vo.CartVO;
+import com.ingang.cartOrder.mapper.CartOrderMapper;
+import com.ingang.cartOrder.vo.CartOrderVO;
+import lombok.Setter;
+
+@Service
+@Qualifier("cartOrderServiceImpl")
+public class CartOrderServiceImpl implements CartOderService {
+
+	@Setter(onMethod_ = @Autowired)
+	private CartOrderMapper mapper;
+	
+	@Override
+	public int cartOrder(CartOrderVO vo) {
+		// TODO Auto-generated method stub
+		mapper.cartOrder(vo);
+	
+		return mapper.cartOrderDetail(vo);
+	}
+
+	@Override
+	public List<CartVO> getCartList(CartVO vo) {
+		
+		
+		
+		return mapper.getCartList(vo);
+	}
+
+}

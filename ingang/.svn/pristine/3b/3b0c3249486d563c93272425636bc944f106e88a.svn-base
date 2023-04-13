@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="com.ingang.cartOrder.mapper.CartOrderMapper">
+  
+<select id="getCartList" resultType="com.ingang.cart.vo.CartVO">
+   select rnum, cartNo, no, bookNo, title, bookName, quantity, id, Price, pino, image
+    from(
+        select rownum rnum, cartNo, no, bookNo, bookName, title, quantity, id, price, pino , image
+            from(
+                SELECT cartNo, c.no no,null as bookno, null as bookname, cs.title title, c.quantity, c.id, cs.price, c.pino, cs.image
+                FROM cart c, course cs
+                WHERE (c.id=#{id}) AND (cs.no = c.no)
+                
+                UNION ALL
+                
+                SELECT cartNo, null as no, c.bookNo bookNo, b.bookName bookname, null as title, c.quantity, c.id, b.price, c.pino, b.fileName
+                FROM cart c, book b
+                WHERE (c.id=#{id}) AND (b.bookNo = c.bookNo)order by cartNo desc
+            ) 
+        ) where cartNo in 
+        <foreach collection="cartNoList" item="item" open="(" close=")" separator=",">
+        #{item}
+         </foreach>
+        
+
+</select>
+
+<insert id="bookCartOrder">
+insert into ordertable (ordNo, id, dlvAdress, name, tel, totalPrice)
+values (ordertable_seq.nextval, #{id}, #{dlvAdress}, #{name}, #{tel}, #{booktotalPrice}) 
+</insert>
+
+<insert id="courseCartOrder">
+insert into enroll(eno, id, totalprice, payMethod)
+values(enroll_seq.nextval, #{id}, #{coursetotalPrice}, #{payMethod})
+</insert>
+
+<insert id="bookCartOrderDetail">
+<selectKey keyProperty="ordNo" order="BEFORE" resultType="Long">
+select max(ordNo) from ordertable where id = #{id}
+</selectKey>
+ INSERT INTO order_detail (DETAILNO, quantity, bookNo, ordNo)
+SELECT order_detail_seq.nextval, quantity, bookNo, #{ordNo}
+FROM cart
+WHERE piNo = 1 and cartNo IN
+   <foreach collection="cartNoList" item="item" open="(" close=")" separator=",">
+  ${item}
+ </foreach>
+ 
+
+
+</insert>
+	
+<insert id="courseCartOrderDetail">
+<selectKey keyProperty="eno" order="BEFORE" resultType="Long">
+		select max(eno) from enroll where id = #{id}
+</selectKey>
+ INSERT INTO eDetail (pno, no, eno)
+SELECT eDetail_seq.nextval, no, #{eno}
+FROM cart
+WHERE piNo = 2 and cartNo IN
+  <foreach collection="cartNoList" item="item" open="(" close=")" separator=",">
+  ${item}
+ </foreach>
+    
+
+
+</insert>
+
+<delete id="orderDelCart">
+delete from cart where cartNo in
+<foreach collection="cartNoList" item="item" open="(" close=")" separator=",">
+${item}
+</foreach>
+
+</delete>
+	
+
+  </mapper>

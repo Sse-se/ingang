@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ingang.order.mapper.OrderMapper">
+
+	<select id="list" resultType="com.ingang.order.vo.OrderVO">
+	select ordNo, fileName, bookNo, bookDiv, id, bookName, name, oname, orderDate, arriveDate, dlvCondition, totalPrice
+	from(
+	    select rownum rnum, ordNo, fileName, bookNo, bookDiv, id, bookName, name, oname, orderDate, arriveDate, dlvCondition, totalPrice
+	    from(
+	        select o.ordNo, b.fileName,b.bookNo, b.bookDiv, m.id, m.name name, b.bookName, o.name oname, o.orderDate, o.arriveDate, o.dlvCondition, o.totalPrice 
+	        from ordertable o, member m, order_detail od, book b
+	        where o.ordNo = od.ordNo and m.id = o.id and od.bookNo = b.bookNo 
+	        order by ordNo desc
+	    )
+	)
+	<!-- getTotalRow() 호출해서 pageObject.setTotRow()를 호출하지 않으면 계산이 안되서 데이터 못가져 옴 -->
+	where rnum between #{startRow} and #{endRow}
+	</select>
+	
+	<!-- 교재 구매 리스트 -->
+	<select id="myList" resultType="com.ingang.order.vo.OrderVO">
+	select ordNo, fileName, bookNo, bookDiv, id, bookName, name, oname, orderDate, arriveDate, dlvCondition, totalPrice
+	from(
+	    select rownum rnum, ordNo, fileName, bookNo, bookDiv, id, bookName, name, oname, orderDate, arriveDate, dlvCondition, totalPrice
+	    from(
+	        select o.ordNo, b.fileName,b.bookNo, b.bookDiv, m.id, m.name name, b.bookName, o.name oname, o.orderDate, o.arriveDate, o.dlvCondition, o.totalPrice 
+	        from ordertable o, member m, order_detail od, book b
+	        where m.id = #{id} and o.ordNo = od.ordNo and m.id = o.id and od.bookNo = b.bookNo 
+	        order by ordNo desc
+	    )
+	)
+	<!-- getTotalRow() 호출해서 pageObject.setTotRow()를 호출하지 않으면 계산이 안되서 데이터 못가져 옴 -->
+	where rnum between #{startRow} and #{endRow}
+	</select>
+	
+<!-- 	<select id="list" resultType="com.ingang.order.vo.OrderVO"> -->
+<!-- 	select ordNo, fileName, bookNo, bookDiv, id, bookName, name, oname, orderDate, arriveDate, dlvCondition, totalPrice -->
+<!-- 	from( -->
+<!-- 	    select rownum rnum, ordNo, fileName, bookNo, bookDiv, id, bookName, name, oname, orderDate, arriveDate, dlvCondition, totalPrice -->
+<!-- 	    from( -->
+<!-- 	        select o.ordNo, b.fileName,b.bookNo, b.bookDiv, m.id, m.name name, b.bookName, o.name oname, o.orderDate, o.arriveDate, o.dlvCondition, o.totalPrice  -->
+<!-- 	        from ordertable o, member m, order_detail od, book b -->
+<!-- 	        where o.ordNo = od.ordNo and m.id = o.id and od.bookNo = b.bookNo  -->
+<!-- 	        order by ordNo desc -->
+<!-- 	    ) -->
+<!-- 	) -->
+ 	<!-- getTotalRow() 호출해서 pageObject.setTotRow()를 호출하지 않으면 계산이 안되서 데이터 못가져 옴 -->
+<!-- 	where rnum between #{startRow} and #{endRow} -->
+<!-- 	</select> -->
+	
+	<select id="getTotalRow" resultType="Long">
+	select count(*) from ordertable
+	</select>
+	
+	<select id="view" resultType="com.ingang.order.vo.OrderVO">
+	 select o.ordNo, od.detailNo, od.quantity odquantity,b.quantity bquantity, b.fileName,b.bookNo, b.bookDiv, m.id, b.bookName, m.name name, o.name oname, o.dlvAdress, o.tel, o.orderDate, o.arriveDate, o.dlvCondition, o.totalPrice, b.price 
+	 from ordertable o, member m, order_detail od, book b
+	 where (o.ordNo = #{ordNo}) and(o.ordNo = od.ordNo) and (m.id = o.id) and (od.bookNo = b.bookNo) 
+	</select>
+	
+	<insert id="buy">
+	insert into ordertable (ordNo, id, dlvAdress, name, tel, totalPrice)
+	values(ordertable_seq.nextval,#{id}, #{dlvAdress}, #{name}, #{tel}, #{totalPrice})
+	</insert>
+	
+	<insert id="buyDetail">
+	insert into order_detail (detailNo, ordNo, quantity, bookNo)
+	values(order_detail_seq.nextval, select max(ordNo) from ordertable where id=#{id},#{odquantity},#{bookNo})
+	</insert>
+	
+	<update id="update" >
+	update ordertable set dlvCondition = #{dlvCondition}
+	where ordNo = #{ordNo}
+	</update>
+</mapper>

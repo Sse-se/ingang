@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ingang.order.mapper.OrderMapper">
+
+	<!-- 교재 구매 리스트 -->
+	<select id="list" resultType="com.ingang.order.vo.OrderVO">
+	select no, title, id, name, writeDate, fileName
+	from(
+	    select rownum rnum, no, title, id, name, writeDate, fileName
+	    from(
+	        select o.ordNo, b.fileName, od.bookDiv m.id, od.bookName, od.bookNo m.name, o.orderDate, 
+	        from order_table o, member m, order_detail od, book b
+	        where (mif.president = 1) and (o.ordNo = od.ordNo and m.id = o.id and od.bookNo = b.bookNo )
+	        order by no desc
+	    )
+	)
+	<!-- getTotalRow() 호출해서 pageObject.setTotRow()를 호출하지 않으면 계산이 안되서 데이터 못가져 옴 -->
+	where rnum between #{startRow} and #{endRow}
+	</select>
+	<select id="getTotalRow" resultType="Long">
+	select count(*) from order_table
+	</select>
+</mapper>

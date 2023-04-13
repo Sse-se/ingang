@@ -1,0 +1,170 @@
+package com.ingang.coReview.controller;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpSession;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.ingang.coReview.service.CoReviewService;
+import com.ingang.coReview.vo.CoReviewVO;
+import com.ingang.member.vo.MemberVO;
+import com.webjjang.util.PageObject;
+
+import lombok.extern.log4j.Log4j;
+
+@RestController
+@RequestMapping("/review")
+@Log4j
+public class CoReviewController {
+	
+	@Autowired
+	@Qualifier("coReivewServiceImpl")
+	private CoReviewService service;
+	
+	// 리뷰 리스트 가져오기
+	@GetMapping(value="/list.do", produces = {MediaType.APPLICATION_JSON_UTF8_VALUE, MediaType.APPLICATION_XML_VALUE})
+	public ResponseEntity<Map<String, Object>> list(long no, String sort, PageObject pageObject, HttpSession session) {
+		log.info("강의 리뷰 리스트 ------------------------------------------");
+		log.info("no : "+no);
+		log.info("sort : " +sort);
+		log.info(pageObject);
+		
+		// 아이디 가져오기
+		String id = null;
+		if((MemberVO)session.getAttribute("login") != null)
+			id = ((MemberVO)session.getAttribute("login")).getId();
+		// 아이디, 강의번호, 정렬 저장
+		CoReviewVO vo = new CoReviewVO();
+		vo.setId(id);
+		vo.setNo(no);
+		vo.setSort(sort);
+		
+		Map<String, Object> map = new HashMap<String, Object>();
+		// 해당 강의의 리뷰리스트 가져오기
+		List<CoReviewVO> list = service.list(pageObject, vo);
+		// 리스트저장
+		map.put("list", list);
+		// 페이지 처리 저장
+		map.put("pageObject", pageObject);
+		// 리스트 총 개수 저장
+		map.put("totalCount", pageObject.getTotalRow());
+		
+		if(id != null) { // 로그인 되어있으면 내 정보 저장
+			// 리스트 중 내가 쓴 리뷰 개수 저장 (0,1)
+			map.put("count", service.count(vo));
+			// 리스트 중 내가 좋아요한 리뷰 번호 리스트
+			map.put("myLike", service.myLike(vo));
+		} else { // 로그인 안되어있으면 0으로 저장
+			// 리스트 중 내가 쓴 리뷰 개수 저장 (0,1)
+			map.put("count", 0);
+			// 리스트 중 내가 좋아요한 리뷰 번호 리스트
+			map.put("myLike", new Long[0]);
+		} // end of if else
+		
+		log.info("list : "+map.get("list"));
+		log.info("pageObject : "+map.get("pageObject"));
+		
+		return new ResponseEntity<Map<String, Object>> (map, HttpStatus.OK);
+	}
+	
+	// 리뷰 작성하기
+	@PostMapping(value = "/write.do", consumes = "application/json", produces = { MediaType.TEXT_PLAIN_VALUE+";charset=utf-8"})
+	public ResponseEntity<String> write(@RequestBody CoReviewVO vo, HttpSession session) {
+		// session에서 아이디 가져오기
+		String id = ((MemberVO)session.getAttribute("login")).getId();
+		vo.setId(id);
+		
+		log.info(vo);
+		// 리뷰 등록
+		service.write(vo);
+		
+		return new ResponseEntity<String>("200" ,HttpStatus.OK) ;
+	}
+	
+	// 리뷰 수정하기
+	@PostMapping(value = "/update.do", consumes = "application/json", produces = { MediaType.TEXT_PLAIN_VALUE+";charset=utf-8"})
+	public ResponseEntity<String> update(@RequestBody CoReviewVO vo, HttpSession session) {
+		// 아이디 가져오기
+		String id = ((MemberVO)session.getAttribute("login")).getId();
+		vo.setId(id);
+		
+		log.info(vo);
+		// 리뷰 수정 실행
+		int result = service.update(vo);
+		
+		if(result == 1)
+			return new ResponseEntity<String>("200" ,HttpStatus.OK) ;
+		else
+			return new ResponseEntity<String>("500" ,HttpStatus.INTERNAL_SERVER_ERROR) ;
+		
+	}
+	
+	
+	// 리뷰 삭제하기
+	@DeleteMapping(value = "/delete.do", produces = { MediaType.TEXT_PLAIN_VALUE+";charset=utf-8"})
+	public ResponseEntity<String> delete(long pno, HttpSession session) {
+		// 아이디, 결제상세번호(수강평번호) 가져오기
+		CoReviewVO vo = new CoReviewVO();
+		log.info(pno);
+		String id = ((MemberVO)session.getAttribute("login")).getId();
+		vo.setPno(pno);
+		vo.setId(id);
+		
+		// 리뷰 삭제 실행
+		int result = service.delete(vo);
+		
+		if(result == 1)
+			return new ResponseEntity<String>("200" ,HttpStatus.OK) ;
+		else
+			return new ResponseEntity<String>("500" ,HttpStatus.INTERNAL_SERVER_ERROR) ;
+		
+	}
+	
+	// 좋아요 버튼 클릭
+	@PostMapping(value = "/like.do", consumes = "application/json", produces = { MediaType.TEXT_PLAIN_VALUE+";charset=utf-8"})
+	public ResponseEntity<String> like(@RequestBody CoReviewVO vo, HttpSession session) {
+		// session에서 아이디 가져오기
+		String id = ((MemberVO)session.getAttribute("login")).getId();
+		vo.setId(id);
+		
+		log.info(vo);
+		// 리뷰 등록
+		service.like(vo);
+		
+		return new ResponseEntity<String>("200" ,HttpStatus.OK) ;
+	}
+	
+	// 좋아요 버튼 취소
+	@DeleteMapping(value = "/cancelLike.do", produces = { MediaType.TEXT_PLAIN_VALUE+";charset=utf-8"})
+	public ResponseEntity<String> cancelLike(long rno, HttpSession session) {
+		// 아이디, 결제상세번호(수강평번호) 가져오기
+		CoReviewVO vo = new CoReviewVO();
+		log.info(rno);
+		String id = ((MemberVO)session.getAttribute("login")).getId();
+		vo.setRno(rno);
+		vo.setId(id);
+		
+		// 리뷰 삭제 실행
+		int result = service.cancelLike(vo);
+		
+		if(result == 1)
+			return new ResponseEntity<String>("200" ,HttpStatus.OK) ;
+		else
+			return new ResponseEntity<String>("500" ,HttpStatus.INTERNAL_SERVER_ERROR) ;
+		
+	}
+	
+}

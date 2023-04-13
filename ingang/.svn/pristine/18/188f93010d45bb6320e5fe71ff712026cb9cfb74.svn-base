@@ -1,0 +1,31 @@
+package com.ingang.coReview.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.ingang.coReview.service.CoReviewService;
+
+import lombok.extern.log4j.Log4j;
+
+@Controller
+@RequestMapping("/courseReview")
+@Log4j
+public class CoReviewController {
+	
+	@Autowired
+	@Qualifier("coReivewServiceImpl")
+	private CoReviewService service;
+	
+	@RequestMapping("/list.do")
+	public String list(Model model) {
+		log.info("강의 리뷰 리스트 ------------------------------------------");
+		
+		model.addAttribute("list", service.list(2));
+		
+		return "/courseReview/list";
+	}
+
+}

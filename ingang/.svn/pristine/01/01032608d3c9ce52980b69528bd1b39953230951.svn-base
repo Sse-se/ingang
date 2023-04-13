@@ -1,0 +1,28 @@
+package com.ingang.course.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.ingang.course.service.CourseService;
+
+@Controller
+@RequestMapping("/course")
+public class CourseController {
+	
+	@Autowired
+	@Qualifier("courseServiceImpl")
+	private CourseService service;
+
+	// 리스트
+	@RequestMapping("/list.do")
+	public String list() {
+		return "course/list";
+	}
+	// 보기
+	// 등록
+	// 수정
+	// 삭제
+	
+} // end of CourseController

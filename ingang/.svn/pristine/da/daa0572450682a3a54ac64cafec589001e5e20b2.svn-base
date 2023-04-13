@@ -1,0 +1,57 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<style type="text/css">
+
+.btnstyle{
+    display: inline-block;
+    padding: 10px 55px;
+    background-color: #ffbe33;
+    color: #ffffff;
+    border-radius: 45px;
+    -webkit-transition: all 0.3s;
+    transition: all 0.3s;
+    border: none;
+}
+
+</style>
+
+</head>
+<body>
+	<section class="layout_padding">
+		<div class="container">
+			<a href="/enroll/orderListAll.do" class="btnstyle">모든회원 강의 결제 리스트 - 관리자(페이지처리, 검색)</a>
+			<a href="/enroll/orderList.do" class="btnstyle">내 강의 결제 리스트(페이지 처리)</a>
+			<a href="/enroll/enrollList.do" class="btnstyle">내 강의목록(검색)</a>
+			<a href="/courseReview/list.do" class="btnstyle">수강평</a>
+			
+			<br>
+			<textarea cols="120" rows="20">
+강의결제
+강의 결제 -> 아직 -> 강의정보, 회원정보 가져오기, 결제정보 -> 결제 처리 
+내 강의 결제 내역  O
+내 강의 결제 상세내역 O
+강의 결제 취소 O
+
+관리자
+모든 회원 강의 결제 내역 - 페이지 처리, 검색 O
+강의 결제 상세내역 -> 페이지 따로?
+강의 결제 취소 -> 상세내역에 따라 변동
+
+내 수강 목록 - 검색 O
+
+수강평작성 O
+수강평리스트 O -> 페이지처리 어떻게??
+수강평수정 -> O
+수강평삭제 -> O
+수강평 좋아요 -> 아직
+
+</textarea>
+		</div>
+	</section>
+</body>
+</html>

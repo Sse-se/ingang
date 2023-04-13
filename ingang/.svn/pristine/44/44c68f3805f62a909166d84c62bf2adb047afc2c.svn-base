@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ingang.coReview.mapper.CoReviewMapper">
+
+	<select id="reviewList" resultType="com.ingang.coReview.vo.CoReviewVO">
+		select pno, rno, id, name, content, writeDate, score, likecnt
+		from(
+			select rownum rnum, pno, rno, id, name, content, writeDate, score, likecnt
+			from(
+			    select pno, rno, id, name, content, writeDate, score, likecnt
+			    from c_reviewList
+			    where no = #{vo.no}
+				<include refid="sort"></include>
+			)
+		)
+		where rnum between #{pageObject.startRow} and #{pageObject.endRow}
+	</select>
+	
+	<!-- getTotalRow -->
+	<select id="getTotalRow" resultType="Long">
+		select count(*)
+		from c_reviewList
+		where no = #{no}
+	</select>
+	
+	<sql id="sort">
+		<if test="vo.sort != null and vo.sort !=''.toString()">
+			<if test="vo.sort.indexOf('recommended'.toString()) >= 0">
+				order by likecnt desc, writeDate desc
+			</if>
+			<if test="vo.sort.indexOf('id'.toString()) >= 0">
+				order by writeDate desc
+			</if>
+			<if test="vo.sort.indexOf('high'.toString()) >= 0">
+				order by score desc, writeDate desc
+			</if>
+			<if test="vo.sort.indexOf('low'.toString()) >= 0">
+				order by score asc, writeDate desc
+			</if>
+		</if>
+		<if test="vo.sort == null or vo.sort ==''.toString()">
+			order by writeDate desc
+		</if>
+	</sql>
+	
+	<insert id="write">
+		insert into review(rno, pno, id, content, score)
+		values(review_seq.nextval, #{pno}, #{id}, #{content}, #{score})
+	</insert>
+	
+	<select id="selectCount" resultType="Long">
+		select count(*) from c_reviewList where id =#{id} and no = #{no}
+	</select>
+	
+	<select id="myLike" resultType="com.ingang.coReview.vo.CoReviewVO">
+		select rno
+		from likeList
+		where id=#{id} and no=${no}
+	</select>
+	
+	<select id="selectPno" resultType="Long">
+		SELECT distinct COALESCE(
+		    (
+		        SELECT enrollList.pno
+		        FROM enrollList
+		        WHERE enrollList.id = #{id} AND enrollList.no = #{no} AND enrollList.status = '결제완료'
+		    ), 
+		    0
+		) AS pno
+		from enrollList
+	</select>
+	
+	<update id="update">
+		update review
+		set content = #{content}, score=#{score}
+		where pno=#{pno} and id=#{id}
+	</update>
+	
+	<delete id="delete">
+		delete from review
+		where pno=#{pno} and id=#{id}
+	</delete>
+	
+	<insert id="like">
+		insert into rlike(id, rno)
+		values(#{id}, #{rno})
+	</insert>
+
+	<delete id="cancelLike">
+		delete from rlike
+		where id=#{id} and rno = #{rno}
+	</delete>
+
+</mapper>

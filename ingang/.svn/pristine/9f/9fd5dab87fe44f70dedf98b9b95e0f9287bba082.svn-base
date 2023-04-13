@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ingang.book.mapper.BookMapper">
+
+	<!-- 리스트 -->
+	<select id="list" resultType="com.ingang.book.vo.BookVO">
+		select bookNo,bookName, fileName, price, bookDiv, pubDate, status
+			from(
+			    select rownum rnum, bookNo,bookName, fileName, price, bookDiv, pubDate, status
+			    from(
+			        select bookNo,bookName, fileName, price, bookDiv, pubDate, status
+			    from book
+			    order by bookNo desc
+		    )
+		)
+		where rnum between #{startRow} and #{endRow}
+	</select>
+	
+	<select id="getTotalRow" resultType="Long">
+		select count(*) from book
+	</select>
+	
+	<select id="view" resultType="com.ingang.book.vo.BookVO">
+		select bookNo, fileName,bookName, bookIntroduce, bookDiv, publisher, quantity, status, pubDate,price
+		from book
+		where bookno = #{bookNo}
+	</select>
+	
+	<select id="clist" resultType="com.ingang.book.vo.BookVO">  
+		select c.cbno, c.title, c.teacher, c.cbno, c.startDate, c.endDate,c.image,b.bookNo
+		from book b, course c
+		where (b.bookNo = c.cbNo)
+	</select>
+	
+	<insert id="write">
+		insert into book(bookNo,fileName,bookName,bookIntroduce,bookDiv,publisher,quantity,status,pubDate,price)
+		values(book_seq.nextval,#{fileName},#{bookName},#{bookIntroduce},#{bookDiv},#{publisher},#{quantity},#{status},#{pubDate1},#{price})
+	</insert>
+	
+	<update id="update">
+		update book set bookName = #{bookName} , bookIntroduce = #{bookIntroduce}, bookDiv = #{bookDiv} ,publisher = #{publisher}
+		, quantity = #{quantity},pubDate = #{pubDate1}, price = #{price1}
+ 		where bookNo = #{bookNo}
+	</update>
+	
+	<update id="updateImage">
+		update book set fileName = #{fileName}
+		where bookNo = #{bookNo} 
+	</update>
+	
+	<delete id="delete">
+		update book set status = '품절'
+		where bookNo = #{bookNo}
+	</delete>
+</mapper>

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="com.ingang.cart.mapper.CartMapper">
+
+  <select id="list" resultType="com.ingang.cart.vo.CartVO">
+    select rnum, cartNo, no, bookNo, title, bookName, quantity, id, Price, pino, image
+    from(
+        select rownum rnum, cartNo, no, bookNo, bookName, title, quantity, id, price, pino , image
+            from(
+                SELECT cartNo, c.no no,null as bookno, null as bookname, cs.title title, c.quantity, c.id, cs.price, c.pino, cs.image
+                FROM cart c, course cs
+                WHERE (c.id=#{id}) AND (cs.no = c.no)
+                
+                UNION ALL
+                
+                SELECT cartNo, null as no, c.bookNo bookNo, b.bookName bookname, null as title, c.quantity, c.id, b.price, c.pino, b.fileName
+                FROM cart c, book b
+                WHERE (c.id=#{id}) AND (b.bookNo = c.bookNo)order by cartNo desc
+            ) 
+        )
+ order by rnum desc
+  </select>
+  
+
+ <insert id="addCart">
+<if test= "bookNo != 0">
+ insert into cart (cartNo, piNo, id, bookNo,  quantity)
+ values (cart_seq.nextval, #{piNo}, #{id}, #{bookNo}, #{quantity})
+ </if>
+<if test= "bookNo == 0">
+  insert into cart (cartNo, piNo, id, no, quantity)
+ values (cart_seq.nextval, #{piNo}, #{id}, #{no}, #{quantity})
+ </if>
+ </insert> 
+	
+  
+  <update id="update">
+  update cart set quantity = #{quantity}
+  where cartNo = #{cartNo}  
+  </update>
+	
+  
+<delete id="delete">
+delete from cart where cartNo = #{cartNo}
+</delete>
+
+<delete id="deleteAll">
+delete from cart where id=#{id}
+</delete>
+
+<select id="searchBook" resultType="int">
+select count(bookNo) from cart 
+where id=#{id} and bookNo=#{bookNo}
+</select>
+
+<select id="searchCourse" resultType="int">
+select count(no) from cart 
+where id=#{id} and no=#{no}
+</select>
+
+<update id="overLabBookInc">
+update cart set quantity = (select quantity from cart where id=#{id} and bookNo=#{bookNo}) + #{quantity}
+where id = #{id} and bookNo=#{bookNo}
+</update>
+
+	
+  
+  </mapper>

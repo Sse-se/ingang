@@ -1,0 +1,15 @@
+package com.ingang.mentoring.service;
+
+import java.util.List;
+
+import com.ingang.mentoring.vo.MentoringVO;
+import com.webjjang.util.PageObject;
+
+public interface MentoringService {
+	
+
+	public List<MentoringVO> list(PageObject pageObject);
+
+	public MentoringVO view(long mno);
+
+}

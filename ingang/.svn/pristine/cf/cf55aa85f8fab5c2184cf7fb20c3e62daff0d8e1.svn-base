@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ingang.messageroom.mapper.MessageRoomMapper">
+	
+	<select id="list" resultType="com.ingang.messageroom.vo.MessageRoomVO" >
+SELECT 
+  mr.roomNO,
+  mr.par1 ,
+  mr.par2 , 
+  mr.lmcontent , 
+  r.resdate,
+  r.restime,
+  mr.unreadcount1,
+  mr.unreadcount2,
+  mr.roomstatus
+  FROM messageroom mr, reservation r
+  
+WHERE 
+  (mr.par1 = #{id}  and mr.rno= r.rno) OR 
+  (mr.par2 = #{id}  and mr.rno= r.rno)
+  
+ORDER BY 
+  r.resdate DESC
+
+	</select>
+	
+	<select id="findroomno" resultType="Long">
+	select roomno from messageroom where (par1 = #{par} and par2 = #{id}) or (par1 = #{id} and par2 = #{par})
+	</select>
+	
+	<insert id="write">
+	insert into messageroom (roomno,rno,lmcontent,par1,par2,roomstatus)
+	values(messageroom_seq.nextval,( select max(rno) from reservation where aid=#{aid} ),#{greetings},#{par1},#{par2},'대기중')
+	</insert>
+	
+	<update id="updatea">
+	update messageroom set roomstatus = '승인됨' where roomno = #{roomno}
+	 </update>
+	 
+	
+	<update id="updatep">
+	update messageroom set roomstatus = '진행중' where roomno = #{roomno}
+	 </update>
+	
+	<update id="updater">
+	update messageroom set roomstatus = '승인거부' where roomno = #{roomno}
+	 </update>
+	
+	<update id="updatet">
+	update messageroom set roomstatus = '종료' where roomno = #{roomno}
+	 </update>
+
+	<select id="getvo" resultType="com.ingang.messageroom.vo.MessageRoomVO">
+	select * from messageroom where roomno = #{roomno}
+	</select>
+</mapper>

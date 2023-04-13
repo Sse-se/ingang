@@ -1,0 +1,127 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ taglib prefix="pageNav" tagdir="/WEB-INF/tags"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>멘토링 리스트</title>
+<style type="text/css">
+.dataRow:hover {
+	background: #eee;
+	cursor: pointer;
+}
+
+.check input[type="checkbox"] {
+    -webkit-appearance: none;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    position: relative;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    outline: none !important;
+    border: 1px solid #9999;
+    vertical-align: middle;
+}
+.check input[type="checkbox"]::before {
+    content: "\2713";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    overflow: hidden;
+    transform: scale(0) translate(-50%, -50%);
+    line-height: 1;
+}
+.check input[type="checkbox"]:checked {
+    background-color: #63aeff;
+    border-color: rgba(255, 255, 255, 0.3);
+    color: white;
+}
+.check input[type="checkbox"]:checked::before {
+    border-radius: 4px;
+    transform: scale(1) translate(-50%, -50%)
+}
+</style>
+<script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+<script type="text/javascript">
+	$(function() {
+		$(".dataRow").click(function() {
+			var mno = $(this).find(".mno").text();
+			location = "view.do?mno=" + mno;
+		});
+
+		 $("input[name='option']").change(function() {
+			    const checkedValues = [];
+			    $("input[name='option']:checked").each(function() {
+			      checkedValues.push($(this).val());
+			    });
+			    console.log(checkedValues);
+			  });
+		 $("#searchBtn").on("click", function() {
+			    const checkedValues = [];
+			    $("input[name='option']:checked").each(function() {
+			      checkedValues.push($(this).val());
+			    });
+			    const queryString = checkedValues.join(",");
+		        location.href = "/mentoring/flist.do?checkedValues=" + queryString;
+			  
+			  });
+			});
+	
+</script> 
+</head>
+<body>
+	<div class="card shadow md-4">
+
+		<div class="card-body">
+
+		<div class="check">
+			<input type="checkbox" id="check1" name="option" value="개발/프로그래밍"><label for ="check1">개발/프로그래밍</label>
+			<input type="checkbox" id="check2" name="option" value="학문/외국어"><label for ="check2">학문/외국어</label>
+			<input type="checkbox" id="check3" name="option" value="직무/마케팅"><label for ="check3">직무/마케팅</label>
+			<input type="checkbox" id="check4" name="option" value="게임개발"><label for ="check4">게임 개발</label>
+			<input type="checkbox" id="check5" name="option" value="보안"><label for ="check5">보안</label>
+			<input type="checkbox" id="check6" name="option" value="커리어"><label for ="check6">커리어</label>
+			<input type="checkbox" id="check7" name="option" value="디자인"><label for ="check7">디자인</label>
+			<input type="checkbox" id="check8" name="option" value="데이터 사이언스"><label for ="check8">데이터 사이언스</label>
+		</div>
+		
+		<div><button id="searchBtn">Search</button></div>
+
+			<table class="table">
+				<thead>
+					<tr>
+						<th>글 번호</th>
+						<th>분야</th>
+						<th>머리말</th>
+						<th>경력</th>
+						<th>현직</th>
+						<th>아이디</th>
+					</tr>
+				</thead>
+				<tbody>
+					<c:forEach items="${flist }" var="vo">
+						<tr class="dataRow">
+							<td class="mno">${vo.mno }</td>
+							<td>${vo.field }</td>
+							<td>${vo.head }</td>
+							<td>${vo.career }</td>
+							<td>${vo.incumbent }</td>
+							<td>${vo.id }</td>
+						</tr>
+					</c:forEach>
+				</tbody>
+			</table>
+			<button type="button" class="btn btn-primary" id="UpdateBtn" onclick= "location.href='write.do'">멘토링 글 등록</button>
+			<button type="button" class="btn btn-primary" id="ApplyBtn" onclick= "location.href='/m_apply/write.do'">멘토 지원하기</button>
+			<div>
+				<pageNav:pageNav listURI="list.do" pageObject="${pageObject }" />
+			</div>
+		</div>
+
+	</div>
+</body>
+</html>

@@ -1,0 +1,49 @@
+package com.ingang.message.service;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
+
+import com.ingang.mentoring.vo.MentoringVO;
+import com.ingang.message.mapper.MessageMapper;
+import com.ingang.message.vo.MessageVO;
+import com.ingang.reservation.mapper.ReservationMapper;
+import com.ingang.reservation.vo.ReservationVO;
+import com.webjjang.util.PageObject;
+
+import lombok.Setter;
+
+@Service
+@Qualifier("messageServiceImpl")
+public class MessageServiceImpl implements MessageService{
+	
+	@Setter(onMethod_ = @Autowired)
+	private MessageMapper mapper;
+
+	@Override
+	public List<MessageVO> list(String id, String par1, long roomno) {
+		// TODO Auto-generated method stub
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("id", id);
+		map.put("par1", par1);
+		map.put("roomno", roomno);
+		
+		return mapper.list(map);
+	}
+
+	@Override
+	public int write(MessageVO vo) {
+		// TODO Auto-generated method stub
+		return mapper.write(vo);
+	}
+	
+
+
+
+
+} // end of CourseServiceImpl class

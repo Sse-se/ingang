@@ -1,0 +1,62 @@
+package com.ingang.coReview.service;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
+
+import com.ingang.coReview.mapper.CoReviewMapper;
+import com.ingang.coReview.vo.CoReviewVO;
+import com.webjjang.util.PageObject;
+
+@Service
+@Qualifier("coReivewServiceImpl")
+public class CoReviewServiceImpl implements CoReviewService{
+
+
+	@Autowired
+	private CoReviewMapper mapper;
+	
+	@Override
+	public List<CoReviewVO> list(PageObject pageObject,CoReviewVO vo) {
+		// TODO Auto-generated method stub
+		
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("pageObject", pageObject);
+		map.put("vo", vo);
+		pageObject.setTotalRow(mapper.selectCount(vo));
+		
+		return mapper.reviewList(map);
+	}
+
+	@Override
+	public long count(CoReviewVO vo) {
+		// TODO Auto-generated method stub
+		return mapper.selectCount(vo);
+	}
+
+	@Override
+	public int write(CoReviewVO vo) {
+		// TODO Auto-generated method stub
+		vo.setPno(mapper.selectPno(vo));
+		
+		return mapper.write(vo);
+	}
+
+	@Override
+	public int update(CoReviewVO vo) {
+		// TODO Auto-generated method stub
+		return mapper.update(vo);
+	}
+
+	@Override
+	public int delete(CoReviewVO vo) {
+		// TODO Auto-generated method stub
+		return mapper.delete(vo);
+	}
+
+	
+}

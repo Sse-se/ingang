@@ -1,0 +1,32 @@
+package com.ingang.course.vo;
+
+import java.util.Date;
+
+import org.springframework.web.multipart.MultipartFile;
+
+import lombok.Data;
+
+@Data
+public class CourseVO {
+	
+	// 강의등록번호
+	private long no;
+	// 강의명, 내용, 작성자(관리자), 강의담당선생님
+	private String title, content, writer, teacher;
+	// 등록일, 시작일, 종료일, 수정일
+	private Date writeDate, startDate, endDate, updateDate;
+	// 영상, 이미지
+	private String vid, image;
+	// 영상 길이
+	private long vidlength;
+	// 이미지파일 업로드
+	private MultipartFile imageM;
+	// 삭제할 이미지 파일
+	private String imageR;
+	// 교재번호, 강의가격
+	private long cbno, price;
+
+	// 선생님 이름, 관련교재 이미지 : teacher,writer(admin) - name / cbno - fileName
+	private String name, fileName;
+	
+}

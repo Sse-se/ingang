@@ -1,0 +1,256 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+    
+<%@ taglib prefix="pageNav" tagdir="/WEB-INF/tags" %>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>장바구니</title>
+<script type="text/javascript">
+$(document).ready(function(){
+	  // 전체 선택 체크박스 클릭 이벤트
+	  $('.all_check').click(function() {
+	    // 전체 선택 체크박스의 상태에 따라 모든 개별 체크박스 선택/해제
+	    $('.checkbox').prop('checked', $(this).prop('checked'));
+	    /* 체크여부에따른 종합 정보 변화 */
+	    setTotalInfo($(".cart_select"));
+	  });
+
+	  // 개별 체크박스 클릭 이벤트
+	  $('.checkbox').click(function() {
+	    // 개별 체크박스의 상태에 따라 전체 선택 체크박스 선택/해제
+	    if ($('.checkbox:checked').length === $('.checkbox').length) {
+	      $('.all_check').prop('checked', true);
+	    } else {
+	      $('.all_check').prop('checked', false);
+	    }
+	    /* 체크여부에따른 종합 정보 변화 */
+	    setTotalInfo($(".product"));
+	  });
+	  
+	  function setTotalInfo(cartInfo) {  
+	//체크박스 전체 갯수
+	  let totalCnt = $('.checkbox:checked').length;
+	  $('#total_cnt_span').text(totalCnt);
+	//  alert(totalCnt);
+
+	  //체크박스 선택 총 금액 
+	  let totalPrice = 0;
+		$('.checkbox:checked').each(function() {
+		  let cartNo = $(this).parents(".product").find(".cartNo").val();
+		  let price = parseInt($(this).parents(".product").find(".price").text().replace(/[^0-9]/g, ''));
+
+		 
+				  
+		  totalPrice += price;
+		
+
+		});
+
+		//총 가격 
+		$('#total_price_span').text(totalPrice);
+	//  alert(totalPrice);
+		
+
+			
+
+
+
+		
+		
+	  }
+  // 페이지 로딩 시 모든 체크박스가 체크되어 있으면 종합 정보 출력
+  if ($('.checkbox:checked').length === $('.checkbox').length) {
+    setTotalInfo($(".product"));
+
+
+  }
+	  
+});// end of function
+
+	
+	$(function() {
+	    $(".quantity-btn").click(function() {
+	        const operation = $(this).data('operation');
+	        const currentQuantity = $(this).parents(".quantity").find(".quantity-input").val();
+	        let cartNo = $(this).parents(".quantity").find(".cartNo").val();
+	        let newQuantity;
+
+	        if (operation === 'increment' && currentQuantity < 999) {
+	            newQuantity = parseInt(currentQuantity) + 1;
+	        } else if (operation === 'decrement' && currentQuantity > 1) {
+	            newQuantity = parseInt(currentQuantity) - 1;
+	        } else {
+		        alert("실패");
+	            return;
+	        }
+
+	        $(this).parents(".quantity").find(".quantity-input").val(newQuantity);
+	   
+
+	        $.ajax({
+	            url: "/cart/update.do",
+	            dataType : "json",
+	            type: "POST",
+	            data: {
+	              cartNo: cartNo,
+	              quantity: newQuantity
+	            },
+	            
+	            success: function(result) {
+	              if (result === 1) {
+		            
+	                location.reload();
+	              } else {
+	                alert("Failed to update cart.");
+	              }
+	            }
+// 	            error: function(xhr){
+// 		            console.log(xhr);
+// 		        }
+	          });
+	        });
+$(".deleteBtn").click(function(){
+
+	let cartNo = $(this).parents(".product").find(".cartNo").val();
+
+	alert(cartNo);
+	
+
+	$.ajax({
+		url : "/cart/delete.do",
+		type : "post",
+		dataType : "json",
+		data : {"cartNo" : cartNo},
+		success : function(result){
+		      if (result === 10) {
+		             location.reload();
+	              } else {
+	                alert("Failed to delete cart.");
+	              }
+		}
+	});
+	
+});
+        
+	      });
+
+</script>
+
+</head>
+<body>
+${list }
+<div class="container">
+<h1>장바구니</h1>
+<div class="all_check_input_div">
+			<input type="checkbox" class="all_check"
+				checked="checked"><span class="all_check_span">전체선택</span>
+				</div>
+				
+		<form action="cartOrder.do" method="post" id="cartOrderForm">
+
+		<c:forEach items="${list }" var="vo">
+<c:choose>
+	<c:when test="${vo.piNo eq 1 }">
+	<div class="product">
+		<div class="col-md-1 cart_select" style="float: left;"><input type="checkbox" name ="cartNo[]" type="checkbox" checked="checked" value="${vo.cartNo }" readonly
+				class="checkbox"></div>
+		<div class="col-md-1" style="float: left;">
+		<span>교재</span>
+		</div>
+		
+		<div class="col-md-2" style="float: left;">
+		<img style="width:40px; height:40px" src="${vo.image }">
+		</div>
+	
+		
+		<div class="col-md-2" style="float: left;">
+		${vo.bookName }
+		</div>
+		
+		<div class="col-md-4 quantity" style="float: left;">
+		<button class="quantity-btn" type="button" data-operation="decrement">-</button>
+		<input type="number" class="quantity-input" value="${vo.quantity }" min="1" max="999">
+		<button class="quantity-btn" type="button" data-operation="increment">+</button>
+		<input class="cartNo" type ="hidden" value="${vo.cartNo }">
+		</div>
+		
+		<div class="col-md-2 price" style="float: left;">
+		
+		${vo.price * vo.quantity } <span>원</span>
+		
+		</div>
+		<div><button class="btn btn-ligth deleteBtn" type="button">x</button></div>
+	</div>
+		
+	</c:when>
+	<c:otherwise>
+	<div class="product">
+	<div class="cart_select"><input type="checkbox" name ="cartNo[]" type="checkbox" checked="checked" value="${vo.cartNo }" readonly
+				class="checkbox"></div>
+	
+	<div>
+		<span>강의</span>
+		</div>
+	
+	<div>
+		<img style="width:40px; height:40px" src="${vo.image }">
+		</div>
+	
+		
+		<div>
+		${vo.title }
+		</div>
+		
+		<div class="quantity">
+		<button class="quantity-btn" type="button" data-operation="decrement">-</button>
+		<input type="number" class="quantity-input" value="${vo.quantity }" min="1" max="999">
+		<button class="quantity-btn" type="button" data-operation="increment">+</button>
+		<input class="cartNo" type ="hidden" value="${vo.cartNo }">
+		</div> 
+		
+		<div class="price">
+		${vo.price }
+		</div>
+		<div><button class="btn btn-ligth deleteBtn" type="button">x</button></div>
+	</div>
+	</c:otherwise>
+</c:choose>
+	
+		
+		</c:forEach>
+<div id="PerPageNum"><pageNav:pageNav listURI="list.do" pageObject="${pageObject }" /></div>
+<input class="page" name="page" type="hidden" value="${param.page }">
+<!-- 	
+		
+		<!--   아래 가격 정보 보는 표 -->
+  <div class="content_total_section">
+		<div class="total_wrap">
+			<table>
+				<tr>
+					<td>
+						<table>
+							<tr>
+								<td>총 주문 상품수</td>
+								<td><span id="total_cnt_span"></span> 개</td>
+							</tr>
+							<tr>
+								<td><strong>총 주문 가격</strong></td>
+								<td><span id="total_price_span"></span> 원</td>
+							</tr>
+						</table>
+						
+					</td>
+				</tr>
+			</table>
+		</div>
+	</div>	
+		<div class="col-md-12" style="margin-left:10px;">
+            <button type="submit" class="btn btn-success btn-lg" id="selectCart" class="selectCart">선택한 상품 주문하기</button>
+	        </div>
+	        </form>
+		</div>	
+</body>
+</html>

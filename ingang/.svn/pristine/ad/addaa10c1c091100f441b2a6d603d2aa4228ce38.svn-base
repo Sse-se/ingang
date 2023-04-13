@@ -1,0 +1,16 @@
+package com.ingang.mentoring.mapper;
+
+import java.util.List;
+
+import com.ingang.mentoring.vo.MentoringVO;
+import com.webjjang.util.PageObject;
+
+public interface MentoringMapper {
+
+	public List<MentoringVO> list(PageObject pageObject);
+
+	public long getTotalRow(PageObject pageObject);
+
+	public MentoringVO view(long mno);
+
+}

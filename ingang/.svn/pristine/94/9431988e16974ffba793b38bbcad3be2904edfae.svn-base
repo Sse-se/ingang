@@ -1,0 +1,122 @@
+package com.ingang.member.Controller;
+
+
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.http.HttpSession;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.ingang.member.service.MemberService;
+import com.ingang.member.vo.MemberVO;
+import com.webjjang.util.PageObject;
+
+import lombok.extern.log4j.Log4j;
+
+@Controller
+@RequestMapping("/member")
+@Log4j
+public class MemberController {
+	
+	@Autowired
+	@Qualifier("memberServiceImpl")
+	private MemberService service;
+	
+	@GetMapping("/loginForm.do")
+	public String loginForm() {
+		
+		return "member/login";
+	}
+	
+	@PostMapping("/login.do")
+	public String login(HttpSession session, MemberVO vo) {
+			System.out.println(vo);
+			session.setAttribute("login", service.login(vo));
+			
+			MemberVO login = (MemberVO) session.getAttribute("login");
+			System.out.println(login);
+			if(login == null) return "redirect:loginForm.do";
+			else return "redirect:/";
+	}
+	
+	@GetMapping("/joinForm.do")
+	public String joinForm() {
+		
+		return "member/join";
+	}
+	
+	@PostMapping("/join.do")
+	public String login(MemberVO vo) {
+			System.out.println(vo);
+			service.join(vo);
+			
+			
+			return "redirect:/";
+	}
+	@GetMapping("/userList.do")
+	public String userList(@ModelAttribute("pageObject") PageObject pageObject, Model model) {
+			model.addAttribute("list", service.userList(pageObject));		
+			return "member/userList";
+	}
+	
+	@GetMapping("/myMenu.do")
+	public String myMenu(Model model, MemberVO vo) {
+			model.addAttribute("vo", service.myMenu(vo));		
+			return "member/myMenu";
+	}
+	
+	
+	@RequestMapping("/idcheck.do")
+    @ResponseBody
+    public Map<Object, Object> idcheck(@RequestBody String id) {
+        
+        int count = 0;
+        Map<Object, Object> map = new HashMap<Object, Object>();
+ 
+        count = service.idCheck(id);
+        System.out.println(count);
+        map.put("cnt", count);
+ 
+        return map;
+    }
+	
+	@GetMapping("/userView.do")
+	public String userView(Model model, String id) {
+			model.addAttribute("vo", service.userView(id));		
+			return "member/userView";
+	}
+	
+	@GetMapping("/tInsert.do")
+	public String tInsert(MemberVO vo) {
+			int result = service.tInsert(vo);
+			String id = vo.getId();
+			return "redirect:userView.do?id="+id;
+	}
+	@GetMapping("/mInsert.do")
+	public String mInsert(MemberVO vo) {
+		int result = service.mInsert(vo);
+		String id = vo.getId();
+			return "redirect:userView.do?id="+id;
+	}
+	@ResponseBody
+	@GetMapping("/kakao")
+	public void  kakaoCallback(@RequestParam String code){
+
+	            System.out.println(code);
+
+	    }
+	
+	
+	
+}

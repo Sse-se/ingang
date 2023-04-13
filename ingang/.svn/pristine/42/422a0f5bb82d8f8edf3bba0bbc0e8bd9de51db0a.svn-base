@@ -1,0 +1,43 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>강의 결제</title>
+</head>
+<body>
+	<section class="layout_padding">
+		<div class="container">
+			<h1>결제 페이지</h1>
+			${course}
+			<form action="/enroll/enroll.do" method="post">
+			<input type="hidden" name=totalprice value="${course.price }">
+			<input type="hidden" name=title value="${course.title }">
+			<input type="hidden" name=no value="${course.no }">
+				이미지 : ${course.fileName }<br>
+				강의명 : ${course.title }<br>
+				강사명 : ${course.teacher }<br>
+				강의종료일 : ${course.endDate }<br>
+				이름 : ${member.name }<br>
+				이메일 : ${member.email }<br>
+				가격 : ${course.price }<br>
+				결제방법 : 
+				<select name="payMethod">
+				<option value="카드결제">카드결제</option>
+				<option value="카카오페이">카카오페이</option>
+				<option value="네이버페이">네이버페이</option>
+				</select>
+				<br>
+				
+				<div>
+					<button>결제하기</button>
+					<button type="button" onclick="history.back()">취소</button>
+				</div>
+			
+			</form>
+			
+		</div>
+	</section>
+</body>
+</html>

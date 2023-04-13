@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ingang.reservation.mapper.ReservationMapper">
+	
+	
+	<insert id="write">
+	insert into reservation (rno,mno,aid,resDate,resTime,greetings,resstatus)
+	values(reservation_seq.nextval,#{mno},#{aid},#{resDate},#{resTime},#{greetings},'대기중')
+	</insert>
+	
+	<select id ="findrno" resultType="Long">
+		SELECT COALESCE(MAX(rno), 0) FROM reservation WHERE mno = #{mno} AND aid = #{aid}
+	</select>
+	
+	<!-- 멘토링 글 번호에 따른 예약 정보 가져오기 -->
+	<select id = "findresdate" resultType="Date" >
+		select resdate from reservation where mno = #{mno}
+	</select>
+
+	<select id ="findrestime" resultType="Long">
+		select restime from reservation where mno=#{mno}
+	</select>
+	
+	<!-- 예약 번호에 따른 예약 정보 가져오기 -->
+	<select id = "getresdate" resultType="Date">
+		select resdate from reservation where rno = #{rno}
+	</select>
+	
+	<select id = "getrestime" resultType="Long">
+		select restime from reservation where rno = #{rno}
+	</select>
+
+</mapper>

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ingang.mentoring.mapper.MentoringMapper">
+	<!-- 멘토 리스트 -->
+	<select id="list"
+		resultType="com.ingang.mentoring.vo.MentoringVO">
+		select mno, mid, head, field, career, incumbent, intro,
+		lecFee, avaStartDate,
+		avaEndDate, avaStartTime, avaEndTime
+		from(
+		select rownum
+		rnum, mno, mid, head, field, career, incumbent, intro, lecFee,
+		avaStartDate,
+		avaEndDate, avaStartTime, avaEndTime
+		from(
+		select mno, mid, head,
+		field, career, incumbent, intro, lecFee, avaStartDate,
+		avaEndDate,
+		avaStartTime, avaEndTime
+		from mentoring where status = '게시중'
+		order by mno desc 
+		)
+		)
+		where rnum between #{startRow} and #{endRow}
+	</select>
+	
+	<!-- 멘토 리스트 -->
+	<select id="flist" resultType="com.ingang.mentoring.vo.MentoringVO">
+  	  SELECT *
+  	  FROM (
+      SELECT ROWNUM rnum, mno, mid, head, field, career, incumbent, intro, lecFee, avaStartDate, avaEndDate, avaStartTime, avaEndTime
+      FROM (
+      SELECT mno, mid, head, field, career, incumbent, intro, lecFee, avaStartDate, avaEndDate, avaStartTime, avaEndTime
+      FROM mentoring
+      WHERE field IN
+      <foreach item="item" collection="checkedValues" separator="," open="(" close=")">
+        #{item}
+      </foreach>
+      and status = '게시중'
+      ORDER BY mno DESC
+   	  )
+ 	  )
+	  WHERE rnum BETWEEN 1 AND 10
+</select>
+	
+	<!-- 멘토 상세보기 -->
+	<select id="getTotalRow" resultType="Long">
+		select count(*)
+		from
+		mentoring
+	</select>
+
+	<select id="view" resultType="com.ingang.mentoring.vo.MentoringVO">
+		select m.mno, mb.memberimg, m.head, m.field, m.career,
+		m.incumbent, m.intro, m.avaStartDate, m.avaEndDate, m.avaStartTime,
+		m.avaEndTime, m.lecfee 
+		from mentoring m, member mb
+		where mno=#{mno} and mb.id = m.mid
+	</select>
+	
+	<select id="viewStartDate" resultType="com.ingang.mentoring.vo.MentoringVO">
+		select avastartdate from mentoring where mno=#{mno}
+	</select>
+	
+	
+	<select id="viewEndDate" resultType="com.ingang.mentoring.vo.MentoringVO">
+		select avaenddate from mentoring where mno=#{mno}
+	</select>
+	
+	<select id="getvo" resultType="com.ingang.mentoring.vo.MentoringVO">
+    SELECT mno, mid, head, field, career, incumbent, intro, lecfee, avastartdate, avaenddate, avastarttime, avaendtime 
+    FROM mentoring
+    WHERE mno = #{mno}
+</select>
+	
+	<insert id="write">
+	insert into mentoring(mno,mid,head,field,career,incumbent,intro,lecfee,avaStartDate,avaenddate,avastarttime,avaendtime,status)
+	values(mentoring_seq.nextval, #{mid}, #{head}, #{field}, #{career}, #{incumbent}, #{intro}, #{lecFee}, #{avaStartDate}, #{avaEndDate}, #{avaStartTime}, #{avaEndTime}, '게시중')
+	</insert>
+	
+	<update id="update">
+	update mentoring set head=#{head}, field = #{field}, career = #{career}, incumbent = #{incumbent},
+	intro = #{intro}, lecFee = #{lecFee}, avaStartDate = #{avaStartDate}, avaEndDate = #{avaEndDate},
+	avaStartTime = #{avaStartTime}, avaEndTime = #{avaEndTime}, status = '게시중'
+	where mno = #{mno}
+	</update>
+	
+	<update id = "deadline">
+	update mentoring set status = '마감' where mno = #{mno}
+	</update>
+
+</mapper>

@@ -1,0 +1,13 @@
+package com.ingang.cart.vo;
+
+import lombok.Data;
+
+@Data
+public class CartVo {
+	
+	private long cartNo, pino;
+	private String id;
+	private long bookNo, no;
+	private int quantity;
+
+}

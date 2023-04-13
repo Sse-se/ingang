@@ -1,0 +1,24 @@
+package com.ingang.enroll.service;
+
+import java.util.List;
+
+import com.ingang.enroll.vo.EnrollVO;
+
+public interface EnrollService {
+
+	// 강의 구매내역
+	public List<EnrollVO> orderList(EnrollVO vo);
+
+	// 강의 구매 상세내역
+	public List<EnrollVO> orderView(EnrollVO vo);
+	
+	// 수강 목록
+	public List<EnrollVO> enrollList(String id);
+	
+	// 강의 결제하기
+	public int enroll(EnrollVO vo);
+	
+	// 수강 취소
+	public int deleteEnroll(EnrollVO vo);
+	
+}

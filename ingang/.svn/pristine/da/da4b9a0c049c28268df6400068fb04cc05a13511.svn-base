@@ -1,0 +1,17 @@
+package com.ingang.course.service;
+
+import java.util.List;
+
+import com.ingang.course.vo.CourseVO;
+
+public interface CourseService {
+
+	
+	// 리스트
+	public List<CourseVO> list();
+	// 보기
+	// 등록
+	// 수정
+	// 삭제
+
+} // end of CourseService interface

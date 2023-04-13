@@ -1,0 +1,27 @@
+package com.ingang.cart.mapper;
+
+import java.util.List;
+import com.ingang.cart.vo.CartVO;
+import com.webjjang.util.PageObject;
+
+
+
+
+
+public interface CartMapper {
+	
+	public List<CartVO> list(String id, PageObject pageObject);
+	public long getTotalRow(PageObject pageObject);
+	
+	public int addCart(CartVO vo);
+	
+	public int update(CartVO vo);
+	
+	public int delete(long cartNo);
+	
+	public int cartOrder(CartVO vo);
+
+	public int allOrder(CartVO vo);
+	
+
+}

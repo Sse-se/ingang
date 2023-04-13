@@ -1,0 +1,41 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>강의 결제 완료</title>
+<script type="text/javascript">
+
+$(function(){
+	$("#viewList").click(function(){
+		// 내 결제 리스트로 이동
+		location="/enroll/orderList.do";
+	});
+
+	$("#viewDetail").click(function(){
+		// 방금 결제한 내역으로 이동
+		location="/enroll/viewDetail.do";
+	});
+
+	
+});
+
+</script>
+
+</head>
+<body>
+
+	<section class="layout_padding">
+		<div class="container">
+		
+			<h1>강의 결제 완료</h1>
+			<h4>결제가 완료되었습니다.</h4>
+			<button class="btn" id="viewList">강의 결제 리스트로 이동</button>
+			<button class="btn" id="viewDetail">결제 상세보기</button>
+			
+		</div>
+	</section>
+
+</body>
+</html>

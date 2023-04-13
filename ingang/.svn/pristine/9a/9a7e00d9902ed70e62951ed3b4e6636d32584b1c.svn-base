@@ -1,0 +1,34 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>강의 결제</title>
+</head>
+<body>
+	<section class="layout_padding">
+		<div class="container">
+			<h1>결제 페이지</h1>
+			
+			<form action="/enroll/enroll.do" method="post">
+				이미지 : <br>
+				강의명 : <br>
+				강사명 : <br>
+				강의종료일 : <br>
+				이름 : ${member.name }<br>
+				이메일 : ${member.email }<br>
+				가격 : <br>
+				결제방법 : <br>
+				
+				<div>
+					<button>결제하기</button>
+					<button type="button" onclick="history.back()">취소</button>
+				</div>
+			
+			</form>
+			
+		</div>
+	</section>
+</body>
+</html>

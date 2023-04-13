@@ -1,0 +1,77 @@
+package com.ingang.message.controller;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.TimeZone;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang3.time.DateUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import com.ingang.member.vo.MemberVO;
+import com.ingang.mentoring.service.MentoringService;
+import com.ingang.mentoring.vo.MentoringVO;
+import com.ingang.message.service.MessageService;
+import com.ingang.message.vo.MessageVO;
+import com.ingang.messageroom.service.MessageRoomService;
+import com.ingang.messageroom.vo.MessageRoomVO;
+import com.ingang.reservation.service.ReservationService;
+import com.ingang.reservation.vo.ReservationVO;
+import com.webjjang.util.PageObject;
+
+@Controller
+@RequestMapping("/message")
+public class MessageController {
+
+	@Autowired
+	@Qualifier("messageRoomServiceImpl")
+	private MessageRoomService messageroomservice;
+	@Autowired
+	@Qualifier("messageServiceImpl")
+	private MessageService messageservice;
+	
+
+	@RequestMapping("/list.do")
+	public String list(Model model, HttpServletRequest request) {
+		
+		MemberVO memberVO = (MemberVO) request.getSession().getAttribute("login");
+		
+		String par1 = request.getParameter("par1");
+		long roomno = Long.parseLong(request.getParameter("roomno"));
+ 		
+		model.addAttribute("list", messageservice.list(memberVO.getId(), par1, roomno));
+		model.addAttribute("vo", messageroomservice.getvo(roomno));
+		
+		return "message/list";
+	}
+	
+	@PostMapping("/write.do")
+	public String write(MessageVO vo, HttpServletRequest request) {
+		
+		MemberVO memberVO = (MemberVO) request.getSession().getAttribute("login");
+		long roomno = Long.parseLong(request.getParameter("roomno"));
+		String par1 = request.getParameter("par1");
+		System.out.println(roomno);
+		vo.setRoomno(roomno);
+		vo.setSender(memberVO.getId());
+		vo.setAccepter(par1);
+		messageservice.write(vo);
+		
+		
+		return "redirect:list.do?par1="+par1+"&roomno="+roomno;
+	}
+
+}

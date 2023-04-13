@@ -1,0 +1,11 @@
+package com.ingang.mentoring.vo;
+
+import lombok.Data;
+
+@Data
+public class MentoringVO {
+
+	private long mno, lecFee;
+	private String id, head, field, career, incumbent, intro,
+	aStartDate, aEndDate, aStartTime, aEndTime; 
+}

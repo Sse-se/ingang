@@ -1,0 +1,19 @@
+package com.ingang.reservation.mapper;
+
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+
+import com.ingang.mentoring.vo.MentoringVO;
+import com.ingang.reservation.vo.ReservationVO;
+import com.webjjang.util.PageObject;
+
+public interface ReservationMapper {
+
+	
+	public int write(ReservationVO vo);
+
+	public long findrno(String id, long mno);
+	
+	
+}

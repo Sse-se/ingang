@@ -1,0 +1,77 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>강의 등록 폼</title>
+</head>
+<body>
+	<!-- 전체 -->
+	<div class="card shadow md-4">
+		<div class="card-header py-3">강의 등록 (관리자 권한)</div>
+		<div class="card-body">
+			<form action="write.do" method="post" enctype="multipart/form-data">
+				<div class="row">
+				
+					<!-- left -->
+					<div class="col-md-6">
+						<div class="form-group">
+							<label>강의명</label>
+							<input name="title" class="form-control" id="title">
+						</div>
+						<div class="form-group">
+							<label>담당자</label>
+							<input name="teacher" class="form-control" id="teacher">
+						</div>
+						<div class="form-group">
+							<label>내용</label>
+							<textarea rows="5" name="content" class="form-control" id="content"></textarea>
+						</div>
+					</div>
+					
+					<!-- right -->
+					<div class="col-md-6" align="right">
+						<div class="form-group">
+							<label>이미지</label>
+							<input name="imageM" class="form-control" id="imageM" type="file">
+						</div>
+						<br />
+						<div class="form-group">
+							<label>동영상</label>
+							<input name="vid" class="form-control" id="vid">
+						</div>
+						<br />
+						<div class="form-group">
+							<label>관련교재</label>
+							<input name="cbno" class="form-control" id="cbno">
+						</div>
+						<br />
+						<div class="form-group">
+							<label>강의가격</label>
+							<input name="price" class="form-control" id="price">
+						</div>
+					</div>
+				</div>
+				<div>
+					<div class="form-group">
+						<label>시작일</label>
+						<input name="startDate" class="form-control" id="startDate" type="date">
+					</div>
+					<div class="form-group">
+						<label>종료일</label>
+						<input name="endDate" class="form-control" id="endDate" type="date">
+					</div>
+					<div class="form-group">
+						<!-- 작성자(관리자) : 로그인 정보  -->
+						<h6>작성자(관리자) : 로그인정보</h6>
+						<input name="writer" class="form-control" id="writer">
+					</div>
+				</div><br/>
+				<button class="btn btn-success">등록</button>
+				<button type="reset" class="btn btn-dark">새로입력</button>
+			</form>
+		</div>
+	</div>
+</body>
+</html>

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ingang.member.mapper.MemberMapper">
+
+	<select id="login" resultType="com.ingang.member.vo.MemberVO">
+		select id, m.email, m.gradeNo, g.gradeName, m.mento, m.teacher from member m,grade g where m.gradeNo = g.gradeNo and (id = #{id} and pw = #{pw} and status='정상')
+	</select>
+
+	<insert id="join">
+		insert into
+		member(id,pw,email,name)values(#{id},#{pw},#{email},#{name})
+	</insert>
+
+	<select id="userList" resultType="com.ingang.member.vo.MemberVO">
+		select id, name, regdate, status, gradename
+	from(
+		select rownum rnum, id, name, regdate, status, gradename
+		from(
+			SELECT M.ID, M.NAME, M.REGDATE,
+		M.STATUS, G.GRADENAME
+		FROM MEMBER M, GRADE G
+		WHERE G.GRADENO = M.GRADENO
+		)
+	)
+	where rnum between #{startRow} and #{endRow}
+	</select>
+
+
+
+	<select id="getTotalRow" resultType="Long">
+		select count(*)
+		from member
+	</select>
+
+	<select id="myMenu" resultType="com.ingang.member.vo.MemberVO">
+		select name,gradeName 
+		from member m, grade g 
+		where m.gradeNo = g.gradeNo and id = #{id}
+	</select>
+
+	<select id="idCheck" parameterType="String" resultType="int">
+		SELECT
+		COUNT(id) FROM MEMBER WHERE id= #{id}
+	</select>
+
+	<select id="userView" resultType="com.ingang.member.vo.MemberVO">
+		SELECT m.id, m.name, m.email,
+		m.regDate, m.teacher, m.mento, m.status, m.address, m.memberimg,
+		g.gradeName
+		from member m, grade g
+		where g.gradeNo = m.gradeNo and id = #{id}
+	</select >
+	<insert id="tInsert">
+		insert into tProposal(id) values(#{id})
+	</insert>
+	<insert id="mInsert">
+		insert into mProposal(id) values(#{id})
+	</insert>
+	
+	<update id="changeAd">
+		update member set address = #{address} where id = #{id}
+	</update>
+	
+	<select id="findPw" resultType="String">
+		select pw from member where email = #{email}
+	</select>
+	
+	<update id="changeGrade">
+		update member set gradeNo = #{gradeNo} where id = #{id}
+	</update>
+	
+	<select id="searchId" resultType="int">
+		SELECT COUNT(id) FROM MEMBER WHERE id= #{id}
+	</select>
+	
+	<insert id="joinKakao">
+		insert into member(id,email)values(#{id},#{email})
+	</insert>
+	
+	<select id="loginKakao" resultType="com.ingang.member.vo.MemberVO">
+		select id, m.email, m.gradeNo, g.gradeName, m.mento, m.teacher from member m,grade g where m.gradeNo = g.gradeNo and (id = #{id} and email = #{email} and status='정상')
+	</select>
+	
+	<update id="userDelete"  >
+		update member set status = '탈퇴' where id = #{id}
+	</update>
+</mapper>

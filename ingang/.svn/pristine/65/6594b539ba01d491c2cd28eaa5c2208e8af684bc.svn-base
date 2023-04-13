@@ -1,0 +1,55 @@
+package com.ingang.order.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
+
+import com.ingang.order.mapper.OrderMapper;
+import com.ingang.order.vo.OrderVO;
+import com.webjjang.util.PageObject;
+
+import lombok.Setter;
+@Service
+@Qualifier("orderServiceImpl")
+public class OrderServiceImpl implements OrderService{
+
+	@Setter(onMethod_ = @Autowired)
+	private OrderMapper mapper;
+	
+	@Override
+	public List<OrderVO> list(PageObject pageObject) {
+		// TODO Auto-generated method stub
+		// 페이지 계산을 위한 세팅
+		pageObject.setTotalRow(mapper.getTotalRow(pageObject));
+
+		return mapper.list(pageObject);
+	}
+
+
+	@Override
+	public OrderVO view(long ordNo) {
+		// TODO Auto-generated method stub
+		return mapper.view(ordNo);
+	}
+
+	@Override
+	public int buy(OrderVO vo) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int update(OrderVO vo) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int delete(long ordNo) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+}

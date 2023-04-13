@@ -1,0 +1,73 @@
+package com.ingang.order.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.ingang.order.service.OrderService;
+import com.ingang.order.service.OrderServiceImpl;
+import com.webjjang.util.PageObject;
+
+import lombok.extern.log4j.Log4j;
+
+@Controller
+@RequestMapping("/order")
+@Log4j
+public class OrderController {
+
+	String modul = "order";
+
+	@Autowired
+	@Qualifier("orderServiceImpl")
+	private OrderService service;
+	
+	// 내 주문 목록 리스트
+	@RequestMapping("/list.do")
+	public String list(@ModelAttribute PageObject pageObject, Model model) {
+		log.info("주문 목록 리스트 ............................................");
+		// 한 페이지당 10개의 주문목록 보여지게 세팅
+		pageObject.setPerPageNum(10);
+		
+		model.addAttribute("list", service.list(pageObject));
+		
+		return modul + "/list";
+		
+	}
+	// 주문 상세 보기
+	@RequestMapping("/view.do")
+	public String view() {
+		return modul + "/view";
+	}
+	//교재 구매하기 폼
+	@GetMapping("/buy.do")
+	public String buyForm() {
+		return modul + "/buy";
+	}
+	// 교재 구매처리
+	@PostMapping("/buy.do")
+	public String buy() {
+		return "redirect:list.do";
+	}
+	
+	// 관리자용 배송상태수정 
+//	@GetMapping("/update.do")
+//	public String updateForm() {
+//		return modul + "/update";
+//	}
+//	
+//	@PostMapping("/update.do")
+//	public String update() {
+//		return modul + "adminlist";
+//	}
+	// 교재 목록 삭제
+	@PostMapping("/delete.do")
+	public String delete() {
+		return modul + "delete";
+	}
+	
+}

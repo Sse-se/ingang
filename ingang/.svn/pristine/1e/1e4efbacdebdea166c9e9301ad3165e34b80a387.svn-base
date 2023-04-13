@@ -1,0 +1,39 @@
+package com.ingang.book.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.ingang.book.service.BookService;
+import com.webjjang.util.PageObject;
+
+import lombok.extern.log4j.Log4j;
+
+@Controller
+@RequestMapping("/book")
+@Log4j
+public class BookController {
+	
+	String modul = "book";
+	String path = "/upload/bookfile";
+
+	@Autowired
+	@Qualifier("bookServiceImpl")
+	private BookService service;
+	
+	// 교재 리스트
+	@RequestMapping("/list.do")
+	public String list(@ModelAttribute PageObject pageObject, Model model) {
+		
+		log.info("교재 리스트........................");
+		
+		model.addAttribute("list", service.list(pageObject));
+		
+		return modul + "/list";
+	}
+	
+	// 교재 상세 보기
+}

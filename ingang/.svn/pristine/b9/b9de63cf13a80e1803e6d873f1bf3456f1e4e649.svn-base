@@ -1,0 +1,36 @@
+package com.ingang.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+
+import com.ingang.book.service.BookService;
+import com.ingang.course.service.CourseService;
+
+/**
+ * Handles requests for the application home page.
+ */
+@Controller
+public class HomeController {
+	
+	@Autowired
+	@Qualifier("courseServiceImpl")
+	private CourseService cService;
+
+	@Autowired
+	@Qualifier("bookServiceImpl")
+	private BookService bService;
+	
+	@RequestMapping(value = "/", method = RequestMethod.GET)
+	public String home(Model model) {
+		
+		model.addAttribute("book", bService.mainList());
+		model.addAttribute("course", cService.mainList());
+		
+		return "main";
+	}
+	
+}

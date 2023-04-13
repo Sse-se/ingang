@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="com.ingang.cart.mapper.CartMapper">
+  
+  <select id="list" resultType="com.ingang.cart.vo.CartVO">
+  
+  select rnum, no, title, bookName, quantity, id, pino, b.price, cs.price
+	  from(
+		  select rownum rnum, no, title, bookName, quantity, id, pino, b.price, cs.price
+		  from(
+			  select c.no, c.bookNo, cs.title, b.bookName, c.quantity, c.id, c.pino, b.price, cs.price
+			  from cart c and book b and course cs and member m 
+			  where (id = #{id}) and (m.id = c.id and b.bookNo = c.bookNo and cs.no = c.no)  
+		  )order by rnum desc
+	  )
+  where rnum between #{startRow} and #{endRow}
+  </select>
+  
+  <select id="getTotalRow" resultType="Long">
+	select count(*)
+	from cart
+  </select>
+  
+  <insert id="write">
+  insert into cart (cartNo, pino, id, bookNo, no, Quantity)
+  values (cart_seq.nextval, #{pino}, #{id}, #{bookNo}, #{no}, #{Quantity})  
+  </insert>
+	
+  
+  <update id="update">
+  update cart set quantity = #{quantity}
+  where cartNo = #{cartNo}  
+  </update>
+	
+  
+  <delete id="delete">
+  delete from cart 
+  where cartNo = #{cartNo}
+  </delete>
+	
+	
+  
+  </mapper>

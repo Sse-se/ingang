@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.ingang.messageroom.mapper.MessageRoomMapper">
+
+	<select id="list"
+		resultType="com.ingang.messageroom.vo.MessageRoomVO">
+		SELECT
+		mr.roomNO,
+		mr.par1 ,
+		mr.par2 ,
+		mr.lmcontent ,
+		mr.field,
+		mr.memberimg,
+		r.resdate,
+		r.restime,
+		mr.unreadcount1,
+		mr.unreadcount2,
+		mr.roomstatus
+		FROM messageroom mr, reservation r
+
+		WHERE
+		(mr.par1 = #{id} and mr.rno= r.rno) OR
+		(mr.par2 = #{id} and mr.rno= r.rno)
+
+		ORDER BY
+		r.resdate DESC
+
+	</select>
+
+	<select id="getvo"
+		resultType="com.ingang.messageroom.vo.MessageRoomVO">
+		select * from messageroom where roomno = #{roomno}
+	</select>
+
+	<select id="findx" resultType="long">
+		SELECT distinct COALESCE(
+		    (
+		        SELECT roomno
+		        FROM messageroom
+		        where (roomno=#{roomno} and par1=#{id})
+		    ), 
+		    0
+		) AS roomno
+		from messageroom
+	</select>
+	<select id="findy" resultType="long">
+		SELECT distinct COALESCE(
+		    (
+		        SELECT roomno
+		        FROM messageroom
+		        where (roomno=#{roomno} and par2=#{id})
+		    ), 
+		    0
+		) AS roomno
+		from messageroom
+	</select>
+	<select id="findroomno" resultType="long">
+		select roomno from messageroom where (par1 = #{par} and par2 = #{id}) or
+		(par1 = #{id} and par2 = #{par})
+	</select>
+
+	<insert id="write">
+		insert into messageroom
+		(roomno,rno,lmcontent,field,memberimg,par1,par2,roomstatus)
+		values(messageroom_seq.nextval,( select max(rno) from reservation
+		where aid=#{aid}
+		),#{greetings},#{field},#{memberimg},#{par1},#{par2},'대기중')
+	</insert>
+
+	<update id="updatea">
+		update messageroom set roomstatus = '승인됨' where roomno = #{roomno}
+	</update>
+
+
+	<update id="updatep">
+		update messageroom set roomstatus = '진행중' where roomno = #{roomno}
+	</update>
+
+	<update id="updater">
+		update messageroom set roomstatus = '승인거부' where roomno = #{roomno}
+	</update>
+
+	<update id="updatet">
+		update messageroom set roomstatus = '종료' where roomno = #{roomno}
+	</update>
+	
+	<update id="updatetTimer">
+		UPDATE messageroom 
+		SET roomstatus = '종료'
+		WHERE EXISTS (
+		        SELECT *   
+		  FROM reservation 
+		  WHERE reservation.rno = messageroom.rno
+		    AND ((reservation.resdate IS NOT NULL AND reservation.resdate &lt; SYSDATE) OR 
+		         (reservation.resdate IS NULL AND reservation.restime &lt; TO_CHAR(SYSDATE, 'HH24'))))
+	</update>
+
+	<update id="timer">
+		UPDATE messageRoom
+		SET roomstatus = '진행중'
+		WHERE roomNo
+		IN (
+		SELECT mr.roomNo
+		FROM messageRoom mr
+		JOIN reservation r ON mr.rno = r.rno
+		WHERE r.resDate = TRUNC(SYSDATE) AND r.resTime = TO_CHAR(SYSTIMESTAMP,
+		'HH24')
+		)and roomstatus='승인됨'
+	</update>
+
+	<update id="utcservice">
+		<if test="x != 0">
+			update messageroom set unreadcount1 = 0 where roomno=#{roomno} and par1 =
+			#{id}
+		</if>
+		<if test="y != 0">
+			update messageroom set unreadcount2 = 0 where roomno=#{roomno} and par2 =
+			#{id}
+		</if>
+	</update>
+
+	<update id="increase">
+		<if test="x != 0">
+			update messageroom set unreadcount2 = unreadcount2 + 1
+		</if>
+		<if test="y != 0">
+			update messageroom set unreadcount1 = unreadcount1 + 1
+		</if>
+	</update>
+	
+	<update id ="adtonull">
+			update message set acceptdate = sysdate 
+			where accepter = #{id} and acceptdate is null
+	</update>
+	
+	<update id = "updatelmcontent">
+			update messageroom set lmcontent = #{lmcontent}
+			where roomno = #{roomno}
+	</update>
+
+	
+
+</mapper>

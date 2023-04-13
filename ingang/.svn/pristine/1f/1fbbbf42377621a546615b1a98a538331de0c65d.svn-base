@@ -1,0 +1,78 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="pageNav" tagdir="/WEB-INF/tags" %>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>강의 결제 내역</title>
+<style type="text/css">
+.dataRow:hover{
+	cursor: pointer;
+	background: #e3e6f0;
+}
+
+.active-Btn{
+	color: white;
+	background: #4e73df;
+}
+.active-Btn:hover{
+	color: white;
+	background: #4e73df;
+}
+
+</style>
+
+<script type="text/javascript">
+$(function(){
+	$(".dataRow").click(function(){
+		let eno = $(this).find(".eno").text();
+		location = "orderView.do?eno="+eno+"&page=${pageObject.page }&perPageNum=${pageObject.perPageNum }";
+	});
+
+	<c:if test="${msg != null}">
+		alert("${msg}")
+	</c:if>
+	
+});
+
+</script>
+
+</head>
+<body>
+	<section class="layout_padding">
+		<div class="container">
+			<h1>결제 내역</h1>
+			
+		<table class="table">
+			<thead>
+				<tr>
+					<th>주문일</th>
+					<th>주문번호</th>
+					<th>강의명</th>
+					<th>총결제금액</th>
+					<th>결제상태</th>
+				</tr>
+			</thead>
+			<tbody>
+			<c:forEach items="${list }" var="vo">
+				<tr class="dataRow">
+					<td><fmt:formatDate value="${vo.payDate }" pattern="yyyy-MM-dd"/></td>
+					<td class="eno">${vo.eno }</td>
+					<td>${vo.title }</td>
+					<td>${vo.totalprice }원</td>
+					<td>${vo.status }</td>
+				</tr>
+			</c:forEach>
+			</tbody>
+		</table>
+		
+		<div id="pageNavDiv"><pageNav:pageNav listURI="orderList.do" pageObject="${pageObject }"/></div>
+		
+		
+		</div>
+	</section>
+</body>
+</html>

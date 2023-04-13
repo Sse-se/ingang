@@ -1,0 +1,111 @@
+package com.ingang.enroll.service;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
+
+import com.ingang.enroll.mapper.EnrollMapper;
+import com.ingang.enroll.vo.EnrollVO;
+import com.webjjang.util.PageObject;
+
+@Service
+@Qualifier("enrollServiceImpl")
+public class EnrollServiceImpl implements EnrollService {
+
+	@Autowired
+	private EnrollMapper mapper;
+	
+	// 본인 강의 구매내역
+	@Override
+	public List<EnrollVO> orderList(String id, PageObject pageObject) {
+		// TODO Auto-generated method stub
+		
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("id", id);
+		map.put("pageObject", pageObject);
+
+		pageObject.setTotalRow(mapper.getTotalRow(map));
+		
+		return mapper.orderList(map);
+	}
+	
+	// 모든회원 강의 구매내역 - 관리자
+	@Override
+	public List<EnrollVO> orderListAll(PageObject pageObject) {
+		// TODO Auto-generated method stub
+		
+		pageObject.setTotalRow(mapper.getTotalRowAll(pageObject));
+		
+		return mapper.orderListAll(pageObject);
+	}
+	
+	// 본인강의 구매 상세내역 
+	@Override
+	public List<EnrollVO> orderView(EnrollVO vo) {
+		// TODO Auto-generated method stub
+		return mapper.orderView(vo);
+	}
+	
+	@Override
+	public List<EnrollVO> viewDetail(EnrollVO vo) {
+		// TODO Auto-generated method stub
+		return mapper.viewDetail(vo);
+	}
+	
+
+	// 수강 목록
+	@Override
+	public List<EnrollVO> enrollList(String id, PageObject pageObject) {
+		// TODO Auto-generated method stub
+		
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("id", id);
+		map.put("pageObject", pageObject);
+		
+		pageObject.setTotalRow(mapper.getTotalRowEnroll(map));
+		
+		return mapper.enrollList(map);
+	}
+
+	// 강의 결제
+	@Override
+	public int enroll(EnrollVO vo) {
+		// TODO Auto-generated method stub
+		
+		// enroll insert
+		mapper.enroll(vo);
+		// detail insert --> 여러개면 for문으로
+		mapper.enrollDetail(vo);
+		
+		return 1;
+	}
+
+	// 본인 강의 결제취소
+	@Override
+	public int deleteEnroll(EnrollVO vo) {
+		// TODO Auto-generated method stub
+		
+		long[] pnoList = vo.getPnoList();
+		
+		// pno 선택한 만큼 취소 실행
+		for(long pno : pnoList) {
+			// delete delete -- 부분 취소
+			vo.setPno(pno);
+			mapper.deleteDetail(vo);
+		}
+		
+		// allCancel이 1이면 enroll 테이블에 취소로 변경
+		if(vo.getAllCancel() == 1) {
+			// delete enroll
+			mapper.deleteEnroll(vo);
+		}
+		
+		return 1;
+	}
+
+
+}

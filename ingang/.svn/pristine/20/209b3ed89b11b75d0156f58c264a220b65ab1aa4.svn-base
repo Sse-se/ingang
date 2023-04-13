@@ -1,0 +1,16 @@
+package com.ingang.m_apply.vo;
+
+
+import java.util.Date;
+
+import lombok.Data;
+
+@Data
+public class M_applyVO {
+
+	private long mno, lecFee;
+	private String id, head, field, career, incumbent, intro;
+	private long avaStartTime, avaEndTime;
+	private Date avaStartDate, avaEndDate;
+	private String memberimg; 
+}

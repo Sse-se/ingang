@@ -1,0 +1,63 @@
+package com.ingang.mentoring.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
+
+import com.ingang.mentoring.mapper.MentoringMapper;
+import com.ingang.mentoring.vo.MentoringVO;
+import com.webjjang.util.PageObject;
+
+import lombok.Setter;
+
+@Service
+@Qualifier("mentoringServiceImpl")
+public class MentoringServiceImpl implements MentoringService{
+	
+	@Setter(onMethod_ = @Autowired)
+	private MentoringMapper mapper;
+	
+	@Override
+	public List<MentoringVO> list(PageObject pageObject) {
+		pageObject.setTotalRow(mapper.getTotalRow(pageObject));
+		return mapper.list(pageObject);
+	}
+
+	@Override
+	public MentoringVO view(long mno) {
+		// TODO Auto-generated method stub
+		return mapper.view(mno);
+	}
+
+	@Override
+	public List<MentoringVO> flist(String[] checkedValues, PageObject pageObject) {
+		// TODO Auto-generated method stub
+		return mapper.flist(checkedValues, pageObject);
+	}
+
+	@Override
+	public int write(MentoringVO vo) {
+		// TODO Auto-generated method stub
+		return mapper.write(vo);
+	}
+
+	@Override
+	public int update(MentoringVO vo) {
+		// TODO Auto-generated method stub
+		return mapper.update(vo);
+	}
+
+	@Override
+	public int deadline(long mno) {
+		// TODO Auto-generated method stub
+		return mapper.deadline(mno);
+		
+	}
+	// 보기
+	// 등록
+	// 수정
+	// 삭제
+
+} // end of CourseServiceImpl class

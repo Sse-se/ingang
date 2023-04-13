@@ -1,0 +1,21 @@
+package com.ingang.mentoring.service;
+
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+
+import com.ingang.mentoring.vo.MentoringVO;
+import com.webjjang.util.PageObject;
+
+public interface MentoringService {
+	
+
+	public List<MentoringVO> list(PageObject pageObject);
+	
+	public List<MentoringVO> flist(@Param("checkedValues") String[] checkedValues, @Param("pageObject") PageObject pageObject);
+
+	public MentoringVO view(long mno);
+	
+	public int write(MentoringVO vo);
+
+}

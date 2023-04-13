@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ingang.enroll.mapper.EnrollMapper">
+
+<!-- 강의 구매내역 -->
+<select id="orderList" resultType="com.ingang.enroll.vo.EnrollVO">
+	select eno, edate, totalprice, title
+	from enrollOrderList
+	where id=#{id}
+</select>
+
+<!-- 강의 구매 상세내역 -->
+<select id="orderView" resultType="com.ingang.enroll.vo.EnrollVO">
+	select image, title, teacher, eDate, price, payStatus, payMethod, totalprice
+	from enrollview
+	where id=#{id} and eno=#{eno}
+</select>
+
+<!-- 수강 목록 -->
+<select id="enrollList" resultType="com.ingang.enroll.vo.EnrollVO">
+	select pno, image, eDate, viewDate, viewRatio, title, teacher
+	from enrollList
+	where id=#{id}
+</select>
+
+<!-- 강의 결제하기 -->
+<!-- enroll insert -->
+<insert id="enroll">
+	insert into enroll(eno, id, totalprice, payMethod)
+	values(enroll_seq.nextval, #{id}, #{totalprice}, #{payMethod})
+</insert>
+<!-- detail insert -->
+<insert id="enrollDetail">
+	insert into eDetail(pno, eno, no)
+	values(eDetail_seq.nextval, select max(eno) from enroll where id=#{id}, #{no})
+</insert>
+
+<!-- 수강 취소 -->
+<!-- detail delete -->
+<delete id="deleteDetailAll">
+	delete from eDetail
+	where eno = #{eno}
+</delete>
+
+<delete id="deleteDetail">
+	delete from eDetail
+	where eno = #{eno} and pno = #{pno}
+</delete>
+
+<!-- enroll delete -->
+<delete id="deleteEnroll">
+	delete from enroll
+	where eno = #{eno}
+</delete>
+
+</mapper>

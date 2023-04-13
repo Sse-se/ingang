@@ -1,0 +1,43 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link href="jquery-ui.css" rel="stylesheet">
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<title>멘토 지원하기 폼</title>
+</head>
+<body>
+	<div class="card shadow md-4">
+		<div class="card-header py-3">멘토 지원하기 폼</div>
+		<div class="card-body">
+			<form action="write.do" method="post" id="writeForm">
+			<!-- 임의로 로그인 -->
+			<input type="hidden" name="id" value="${login.id }">
+				<div class="form-group">
+					<label>머리말</label> <input name="head" class="form-control"
+						id="head">
+				</div>
+				<h4>멘토 정보</h4>
+				<div class="form-group">
+					<label>분야</label> <input name="field" class="form-control"
+						id="field">
+				</div>
+				<div class="form-group">
+					<label>경력 인증</label> <input name="cer_career" class="form-control"
+						id="cer_career">
+				</div>
+				
+
+				<button class="btn btn-default">지원하기</button>
+				<button type="reset" class="btn btn-default">새로입력</button>
+				<button type="button" class="btn btn-default"
+					onclick="history.back()">취소</button>
+			</form>
+		</div>
+	</div>
+</body>
+
+</html>
